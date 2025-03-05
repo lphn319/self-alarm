@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "hcmute.edu.vn.linhvaloc.selfalarmproject"
+    namespace = "hcmute.edu.vn.linhvalocvabao.selfalarmproject"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "hcmute.edu.vn.linhvaloc.selfalarmproject"
+        applicationId = "hcmute.edu.vn.linhvalocvabao.selfalarmproject"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

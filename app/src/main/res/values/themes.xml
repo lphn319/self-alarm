@@ -19,6 +19,10 @@
         <!-- Component styles -->
         <item name="materialCardViewStyle">@style/Widget.SelfAlarm.CardView</item>
         <item name="materialButtonStyle">@style/Widget.SelfAlarm.Button</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+
     </style>
 
     <!-- Text styles -->
