@@ -1,0 +1,62 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.SelfAlarmProject" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Text appearance. -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.SelfAlarm.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.SelfAlarm.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.SelfAlarm.Headline3</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.SelfAlarm.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.SelfAlarm.Body2</item>
+        <!-- Component styles -->
+        <item name="materialCardViewStyle">@style/Widget.SelfAlarm.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.SelfAlarm.Button</item>
+    </style>
+
+    <!-- Text styles -->
+    <style name="TextAppearance.SelfAlarm.Headline1" parent="TextAppearance.MaterialComponents.Headline1">
+        <item name="fontFamily">sans-serif-light</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="TextAppearance.SelfAlarm.Headline2" parent="TextAppearance.MaterialComponents.Headline2">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.SelfAlarm.Headline3" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.SelfAlarm.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="TextAppearance.SelfAlarm.Body2" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Component styles -->
+    <style name="Widget.SelfAlarm.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">8dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <style name="Widget.SelfAlarm.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+    <style name="Theme.SelfAlarmProject" parent="Base.Theme.SelfAlarmProject" />
+</resources>
