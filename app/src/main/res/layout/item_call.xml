@@ -1,31 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:layout_margin="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
 
-    <TextView
-        android:id="@+id/txt_phone_number"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Phone Number"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:padding="12dp">
 
-    <TextView
-        android:id="@+id/txt_call_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Call Type"
-        android:textSize="16sp"
-        android:textColor="@android:color/holo_blue_dark"/>
+        <ImageView
+            android:id="@+id/img_call_type"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_call"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="Call type icon" />
 
-    <TextView
-        android:id="@+id/txt_call_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Call Date"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/txt_phone_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Phone Number"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/img_call_type"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/txt_call_date" />
+
+        <TextView
+            android:id="@+id/txt_call_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Call Type"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/img_call_type"
+            app:layout_constraintTop_toBottomOf="@id/txt_phone_number"
+            app:layout_constraintEnd_toStartOf="@id/txt_call_date" />
+
+        <TextView
+            android:id="@+id/txt_call_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_call_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Duration"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/txt_call_type"
+            app:layout_constraintTop_toBottomOf="@id/txt_call_type" />
+
+        <ImageButton
+            android:id="@+id/btn_call"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_reply"
+            android:contentDescription="Call back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_call_date"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

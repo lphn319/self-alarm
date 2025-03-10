@@ -68,14 +68,14 @@
             app:icon="@drawable/ic_skip_previous"
             />
 
-        <com.google.android.material.button.MaterialButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/play_pause_button"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            app:icon="@drawable/ic_play"
-            app:cornerRadius="32dp"
+            app:srcCompat="@drawable/ic_play"
+            app:backgroundTint="@color/anime_primary_blue"
+            app:tint="@android:color/white"
             />
 
         <com.google.android.material.button.MaterialButton

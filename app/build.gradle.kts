@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "hcmute.edu.vn.linhvalocvabao.selfalarmproject"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -25,6 +25,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -42,4 +43,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.androidx.media)
     implementation(libs.androidx.work)
+    implementation(libs.androidx.core)
+    implementation(libs.recyclerview)
+    implementation(libs.cardview)
+    implementation(libs.gson)
 }
