@@ -9,6 +9,10 @@ activity = "1.10.0"
 constraintlayout = "2.2.0"
 androidx-media = "1.6.0"
 androidx-work = "2.8.1"
+androidx-core = "1.12.0"
+recyclerview = "1.2.1"
+cardview = "1.0.0"
+gson = "2.8.7"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +24,10 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-media = { module = "androidx.media:media", version.ref = "androidx-media" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

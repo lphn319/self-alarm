@@ -12,9 +12,12 @@
         android:padding="16dp">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/status_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,27 +31,68 @@
                     android:text="Battery Status"
                     android:textAppearance="?attr/textAppearanceHeadline6"/>
 
-                <TextView
-                    android:id="@+id/battery_level"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAppearance="?attr/textAppearanceBody1"/>
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp">
 
-                <TextView
-                    android:id="@+id/charging_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textAppearance="?attr/textAppearanceBody2"/>
+                    <ImageView
+                        android:id="@+id/battery_icon"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_battery"
+                        android:contentDescription="Battery icon"/>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginStart="16dp">
+
+                        <TextView
+                            android:id="@+id/battery_level"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="80%"
+                            android:textSize="24sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/charging_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Status: Charging (AC)"
+                            android:textAppearance="?attr/textAppearanceBody1"/>
+
+                        <TextView
+                            android:id="@+id/battery_temperature"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Temperature: 32.5°C"
+                            android:textAppearance="?attr/textAppearanceBody2"/>
+
+                        <TextView
+                            android:id="@+id/battery_health"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Health: Good"
+                            android:textAppearance="?attr/textAppearanceBody2"/>
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/settings_card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -62,12 +106,27 @@
                     android:text="Optimization Settings"
                     android:textAppearance="?attr/textAppearanceHeadline6"/>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Enable automatic optimizations to save battery when levels are low or screen is off."
+                    android:textAppearance="?attr/textAppearanceBody2"/>
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/auto_brightness"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Auto Brightness"/>
+                    android:text="Auto Brightness Adjustment"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Reduce screen brightness when battery is low"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"/>
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/wifi_optimization"
@@ -76,17 +135,77 @@
                     android:layout_marginTop="8dp"
                     android:text="WiFi Optimization"/>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Turn off WiFi when screen is off and battery is low"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"/>
+
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/background_sync"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Background Sync"/>
+                    android:text="Background Sync Control"/>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="Disable background sync when battery is low"
+                    android:textSize="12sp"
+                    android:textColor="?android:textColorSecondary"/>
             </LinearLayout>
-
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="4dp"
+            app:cardCornerRadius="8dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Battery Tips"
+                    android:textAppearance="?attr/textAppearanceHeadline6"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:text="• Reduce screen brightness to save power"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:text="• Turn off WiFi and Bluetooth when not in use"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:text="• Close unused apps running in the background"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:text="• Use dark mode to save battery on OLED screens"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

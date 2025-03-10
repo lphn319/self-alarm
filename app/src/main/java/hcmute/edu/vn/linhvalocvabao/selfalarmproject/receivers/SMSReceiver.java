@@ -1,67 +1,129 @@
 package hcmute.edu.vn.linhvalocvabao.selfalarmproject.receivers;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.core.app.NotificationCompat;
+
+import java.util.ArrayList;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.SMS;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.BlacklistService;
 
 public class SMSReceiver extends BroadcastReceiver {
+    private static final String TAG = "SMSReceiver";
+    public static final String SMS_RECEIVED_ACTION = "hcmute.edu.vn.linhvalocvabao.selfalarmproject.SMS_RECEIVED";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        // Lấy nội dung tin nhắn
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            Object[] pdus = (Object[]) bundle.get("pdus");
-            for (Object pdu : pdus) {
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
+        if (intent.getAction() != null &&
+                intent.getAction().equals(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)) {
+            // Get SMS message
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                // Retrieve the SMS message received
+                Object[] pdus = (Object[]) bundle.get("pdus");
+                if (pdus != null) {
+                    String sender = "";
+                    StringBuilder fullMessage = new StringBuilder();
 
-                // Lấy thông tin tin nhắn
-                String sender = smsMessage.getOriginatingAddress();
-                String messageBody = smsMessage.getMessageBody();
+                    // Get message format
+                    String format = bundle.getString("format");
 
-                // Xử lý tin nhắn (hiển thị, lưu vào database, v.v.)
-                handleIncomingSMS(context, sender, messageBody);
+                    // Process all PDUs
+                    for (Object pdu : pdus) {
+                        SmsMessage smsMessage;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                            smsMessage = SmsMessage.createFromPdu((byte[]) pdu, format);
+                        } else {
+                            smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
+                        }
+
+                        // Get sender phone number
+                        sender = smsMessage.getDisplayOriginatingAddress();
+
+                        // Append message part
+                        fullMessage.append(smsMessage.getMessageBody());
+                    }
+
+                    // Check if sender is in blacklist
+                    checkBlacklist(context, sender, fullMessage.toString());
+                }
             }
         }
     }
 
-    private void handleIncomingSMS(Context context, String sender, String messageBody) {
-        // Kiểm tra blacklist
-        if (isBlacklistedNumber(sender)) {
-            // Từ chối tin nhắn
-            abortBroadcast();
-            return;
-        }
+    private void checkBlacklist(Context context, String sender, String message) {
+        // Create a BroadcastReceiver to handle the result
+        BroadcastReceiver blacklistCheckReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean isBlacklisted = intent.getBooleanExtra(BlacklistService.EXTRA_IS_BLACKLISTED, false);
+                boolean blockMessages = intent.getBooleanExtra(BlacklistService.EXTRA_BLOCK_MESSAGES, false);
 
-        // Lưu tin nhắn vào database
-        saveSMSToDB(sender, messageBody);
+                if (isBlacklisted && blockMessages) {
+                    // Block message by aborting broadcast
+                    Log.d(TAG, "Blocked SMS from blacklisted number: " + sender);
+                    abortBroadcast();
 
-        // Hiển thị thông báo
-        showSMSNotification(context, sender, messageBody);
-    }
+                    // Notify user about blocked message
+                    NotificationManager notificationManager =
+                            (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-    private boolean isBlacklistedNumber(String phoneNumber) {
-        // Kiểm tra số điện thoại có trong blacklist không
-        // Implement logic kiểm tra từ database hoặc SharedPreferences
-        return false;
-    }
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        NotificationChannel channel = new NotificationChannel(
+                                "blocked_sms_channel",
+                                "Blocked SMS",
+                                NotificationManager.IMPORTANCE_DEFAULT
+                        );
+                        notificationManager.createNotificationChannel(channel);
+                    }
 
-    private void saveSMSToDB(String sender, String messageBody) {
-        // Lưu tin nhắn vào database
-        // Implement logic lưu trữ tin nhắn
-    }
+                    Notification notification = new NotificationCompat.Builder(context, "blocked_sms_channel")
+                            .setSmallIcon(R.drawable.ic_block)
+                            .setContentTitle("Blocked SMS")
+                            .setContentText("Message from " + sender + " was blocked")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setAutoCancel(true)
+                            .build();
 
-    private void showSMSNotification(Context context, String sender, String messageBody) {
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_sms)
-//                .setContentTitle("Tin nhắn mới từ " + sender)
-//                .setContentText(messageBody)
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-//
-//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-//        notificationManager.notify(NOTIFICATION_ID, builder.build());
+                    notificationManager.notify((int) System.currentTimeMillis(), notification);
+                } else {
+                    // Allow message through and notify app
+                    Intent broadcastIntent = new Intent(SMS_RECEIVED_ACTION);
+                    broadcastIntent.putExtra("sender", sender);
+                    broadcastIntent.putExtra("message", message);
+                    context.sendBroadcast(broadcastIntent);
+
+                    Log.d(TAG, "SMS received from: " + sender);
+                }
+
+                // Unregister this receiver
+                context.unregisterReceiver(this);
+            }
+        };
+
+        // Register the receiver
+        context.registerReceiver(
+                blacklistCheckReceiver,
+                new IntentFilter("hcmute.edu.vn.linhvalocvabao.selfalarmproject.BLACKLIST_CHECK_RESULT"), Context.RECEIVER_NOT_EXPORTED
+        );
+
+        // Send request to BlacklistService to check if number is blacklisted
+        Intent blacklistIntent = new Intent(context, BlacklistService.class);
+        blacklistIntent.setAction(BlacklistService.ACTION_CHECK_BLACKLIST);
+        blacklistIntent.putExtra(BlacklistService.EXTRA_PHONE_NUMBER, sender);
+        context.startService(blacklistIntent);
     }
 }
