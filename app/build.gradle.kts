@@ -66,5 +66,10 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
 
+    // utils
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // ui
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
 }

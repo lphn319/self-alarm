@@ -14,11 +14,15 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
 
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,11 +36,12 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Mặc định load fragment Music khi mở app
+        // Mặc định load fragment Music Chart khi mở app
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MusicPlayerFragment())
+                    .replace(R.id.fragment_container, new MusicChartFragment())
                     .commit();
+            bottomNavigationView.setSelectedItemId(R.id.nav_music);
         }
 
         // Xử lý sự kiện chuyển fragment khi chọn item bottom navigation
@@ -48,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 // Chọn fragment tương ứng với item được chọn
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_music) {
-                    selectedFragment = new MusicPlayerFragment();
+                    selectedFragment = new MusicChartFragment();
                 } else if (itemId == R.id.nav_schedule) {
                     selectedFragment = new ScheduleFragment();
                 } else if (itemId == R.id.nav_sms_call) {

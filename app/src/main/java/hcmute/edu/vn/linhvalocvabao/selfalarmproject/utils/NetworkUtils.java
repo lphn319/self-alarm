@@ -4,7 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.NetworkRequest;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -13,10 +15,13 @@ import androidx.lifecycle.MutableLiveData;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Utility class for network operations and connectivity status
  * 
  * Created: 2025-03-10
+ * Updated: 2025-03-10
  * @author lochuungcontinue
  */
 @Singleton
@@ -26,7 +31,7 @@ public class NetworkUtils {
     private final ConnectivityManager connectivityManager;
     
     @Inject
-    public NetworkUtils(Context context) {
+    public NetworkUtils(@ApplicationContext Context context) {
         this.context = context;
         this.connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         
@@ -59,13 +64,14 @@ public class NetworkUtils {
      */
     public boolean isOnline() {
         if (connectivityManager != null) {
-            Network network = connectivityManager.getActiveNetwork();
-            if (network != null) {
-                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-                return capabilities != null && 
-                       (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET));
+            } else {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
             }
         }
         return false;

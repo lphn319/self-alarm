@@ -35,4 +35,10 @@ public class Constants {
     public static final String MEDIA_SESSION_TAG = "ZING_MP3_MEDIA_SESSION";
     public static final int NOTIFICATION_ID = 1001;
     public static final String CHANNEL_ID = "zing_mp3_playback_channel";
+    
+    // Chart Constants
+    public static final int CHART_SONG_LIMIT = 20;
+    public static final String CHART_TYPE_REALTIME = "realtime";
+    public static final String CHART_TYPE_WEEK = "week";
+    public static final String CHART_TYPE_MONTH = "month";
 }
