@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -26,6 +28,7 @@ import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapters.ChartAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.api.ZingMp3Api;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.model.Music;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.NetworkUtils;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.viewmodels.MusicPlayerViewModel;
 
 @AndroidEntryPoint
 public class MusicChartFragment extends Fragment {
@@ -39,8 +42,10 @@ public class MusicChartFragment extends Fragment {
     private RecyclerView recyclerViewCharts;
     private ProgressBar progressBar;
     private TextView tvEmptyState;
+    private CardView cardEmptyState;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ChartAdapter adapter;
+    private MusicPlayerViewModel musicPlayerViewModel;
 
     public MusicChartFragment() {
         // Required empty public constructor
@@ -57,10 +62,14 @@ public class MusicChartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
+        // Initialize ViewModel
+        musicPlayerViewModel = new ViewModelProvider(requireActivity()).get(MusicPlayerViewModel.class);
+        
         // Initialize views
         recyclerViewCharts = view.findViewById(R.id.recyclerViewCharts);
         progressBar = view.findViewById(R.id.progressBar);
         tvEmptyState = view.findViewById(R.id.tvEmptyState);
+        cardEmptyState = view.findViewById(R.id.cardEmptyState);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         
         // Set up RecyclerView
@@ -68,7 +77,7 @@ public class MusicChartFragment extends Fragment {
         adapter = new ChartAdapter(new ArrayList<>(), requireContext(), new ChartAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Music music, int position) {
-                // Handle song click
+                // Play the selected music
                 playMusic(music);
             }
 
@@ -89,6 +98,13 @@ public class MusicChartFragment extends Fragment {
                 android.R.color.holo_red_light
         );
         
+        // Observe ViewModel for errors
+        musicPlayerViewModel.getErrorMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+        
         // Load data
         loadChartData();
     }
@@ -98,52 +114,76 @@ public class MusicChartFragment extends Fragment {
         if (!networkUtils.isOnline()) {
             showError("No internet connection available");
             swipeRefreshLayout.setRefreshing(false);
+            showEmptyState(true, "No internet connection");
             return;
         }
         
         // Show loading state
-        if (!swipeRefreshLayout.isRefreshing()) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-        tvEmptyState.setVisibility(View.GONE);
+        showLoadingState(true);
         
         // Call API to get chart data
         zingMp3Api.getTrendingSongs().observe(getViewLifecycleOwner(), musicList -> {
             // Hide loading indicators
-            progressBar.setVisibility(View.GONE);
-            swipeRefreshLayout.setRefreshing(false);
+            showLoadingState(false);
             
             if (musicList != null && !musicList.isEmpty()) {
                 // Display data
                 adapter.updateData(musicList);
-                tvEmptyState.setVisibility(View.GONE);
+                showEmptyState(false, null);
             } else {
                 // Show empty state
-                tvEmptyState.setVisibility(View.VISIBLE);
+                showEmptyState(true, "No songs found");
                 adapter.updateData(new ArrayList<>());
             }
         });
+    }
+    
+    private void showLoadingState(boolean isLoading) {
+        if (!swipeRefreshLayout.isRefreshing()) {
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+        if (!isLoading) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+    
+    private void showEmptyState(boolean isEmpty, String message) {
+        cardEmptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        if (isEmpty && message != null) {
+            tvEmptyState.setText(message);
+        }
     }
     
     private void showError(String message) {
         if (getContext() != null) {
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
-        progressBar.setVisibility(View.GONE);
-        swipeRefreshLayout.setRefreshing(false);
+        showLoadingState(false);
     }
     
     private void playMusic(Music music) {
         if (music != null && music.getId() != null) {
+            // Use ViewModel to play the music
+            musicPlayerViewModel.playMusic(music);
             Toast.makeText(requireContext(), "Playing: " + music.getTitle(), Toast.LENGTH_SHORT).show();
-            // TODO: Implement actual playback using a music service
+        }
+    }
+    
+    private void playAllFromPosition(int position) {
+        List<Music> songs = adapter.getMusicList();  // This will now work with our added method
+        if (songs != null && !songs.isEmpty() && position >= 0 && position < songs.size()) {
+            musicPlayerViewModel.playPlaylist(songs, position);
         }
     }
     
     private void showMoreOptions(Music music) {
         if (music != null) {
+            // Create bottom sheet dialog with actions like:
+            // - Add to Favorites
+            // - Add to Playlist
+            // - Share
+            // For now, just show toast
             Toast.makeText(requireContext(), "Options for: " + music.getTitle(), Toast.LENGTH_SHORT).show();
-            // TODO: Show a bottom sheet with more options (add to favorites, share, etc.)
         }
     }
 }

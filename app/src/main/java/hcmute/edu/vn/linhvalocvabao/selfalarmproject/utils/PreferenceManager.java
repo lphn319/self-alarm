@@ -20,11 +20,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Handles app preferences and secure storage
  * 
  * Last updated: 2025-03-10 11:07:57
- * @author lochuungPreferenceManager
  */
 @Singleton
 public class PreferenceManager {
@@ -54,7 +55,7 @@ public class PreferenceManager {
      * Constructor with initialization
      */
     @Inject
-    public PreferenceManager(Context context) {
+    public PreferenceManager(@ApplicationContext Context context) {
         this.generalPrefs = context.getSharedPreferences(PREFS_GENERAL, Context.MODE_PRIVATE);
         this.securePrefs = createSecurePreferences(context);
         this.gson = new Gson();
@@ -291,5 +292,15 @@ public class PreferenceManager {
      */
     public boolean isLoggedIn() {
         return getAccessToken() != null && !getAccessToken().isEmpty();
+    }
+
+    /**
+     * Clear playback history
+     */
+    public void clearPlaybackHistory() {
+        generalPrefs.edit()
+                .remove(KEY_LAST_PLAYED_SONG_ID)
+                .remove(KEY_LAST_PLAYLIST)
+                .apply();
     }
 }

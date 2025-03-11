@@ -1,109 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<androidx.cardview.widget.CardView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp">
-    
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:background="?attr/selectableItemBackground">
+        android:padding="12dp">
 
         <TextView
-            android:id="@+id/tvRank"
+            android:id="@+id/tvPosition"
             android:layout_width="32dp"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_circle_position"
             android:gravity="center"
-            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#222222"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="1" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardThumbnail"
+        <ImageView
+            android:id="@+id/ivThumbnail"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_marginStart="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintStart_toEndOf="@id/tvRank"
+            android:layout_marginStart="12dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvPosition"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:contentDescription="@string/album_cover"
+            tools:src="@drawable/placeholder_album" />
 
-            <ImageView
-                android:id="@+id/ivThumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                tools:src="@tools:sample/avatars" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#33000000" />
-
-            <ImageView
-                android:id="@+id/ivPlayIndicator"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_play_circle"
-                android:alpha="0.9" />
-        </androidx.cardview.widget.CardView>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
-            app:layout_constraintStart_toEndOf="@id/cardThumbnail"
-            app:layout_constraintEnd_toStartOf="@id/ivMore"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#212121"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
+            app:layout_constraintStart_toEndOf="@id/ivThumbnail"
+            app:layout_constraintTop_toTopOf="@id/ivThumbnail"
+            tools:text="Song Title" />
 
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="#222222"
-                android:ellipsize="end"
-                android:maxLines="1"
-                tools:text="Song Title" />
+        <TextView
+            android:id="@+id/tvArtist"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/btnMore"
+            app:layout_constraintStart_toEndOf="@id/ivThumbnail"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle"
+            app:layout_constraintBottom_toBottomOf="@id/ivThumbnail"
+            tools:text="Artist Name" />
 
-            <TextView
-                android:id="@+id/tvArtists"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#757575"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginTop="4dp"
-                tools:text="Artist Name" />
-
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/ivMore"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_more_vert"
-            android:padding="2dp"
+        <ImageButton
+            android:id="@+id/btnMore"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/more_options"
+            android:src="@drawable/ic_more_vert"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

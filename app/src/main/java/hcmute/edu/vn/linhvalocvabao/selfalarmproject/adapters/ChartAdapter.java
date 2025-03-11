@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,8 +23,8 @@ import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.model.Music;
 public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartViewHolder> {
 
     private List<Music> musicList;
-    private Context context;
-    private OnItemClickListener listener;
+    private final Context context;
+    private final OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Music music, int position);
@@ -39,82 +40,80 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartViewHol
     @NonNull
     @Override
     public ChartViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_music_chart, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_music_chart, parent, false);
         return new ChartViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChartViewHolder holder, int position) {
         Music music = musicList.get(position);
-        
-        // Set rank position (1-based)
-        holder.tvRank.setText(String.valueOf(position + 1));
-        
-        // Highlight top 3 ranks with different colors
-        if (position == 0) {
-            holder.tvRank.setTextColor(context.getResources().getColor(android.R.color.holo_red_dark));
-        } else if (position == 1) {
-            holder.tvRank.setTextColor(context.getResources().getColor(android.R.color.holo_blue_dark));
-        } else if (position == 2) {
-            holder.tvRank.setTextColor(context.getResources().getColor(android.R.color.holo_green_dark));
-        } else {
-            holder.tvRank.setTextColor(context.getResources().getColor(android.R.color.black));
-        }
-        
-        holder.tvTitle.setText(music.getTitle());
-        holder.tvArtists.setText(music.getArtists());
-        
-        // Load thumbnail with rounded corners
-        if (music.getThumbnailM() != null && !music.getThumbnailM().isEmpty()) {
-            Glide.with(context)
-                .load(music.getThumbnailM())
-                .placeholder(R.drawable.ic_play_circle)
-                .error(R.drawable.ic_play_circle)
-                .into(holder.ivThumbnail);
-        } else {
-            holder.ivThumbnail.setImageResource(R.drawable.ic_play_circle);
-        }
-        
-        // Set click listeners
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onItemClick(music, position);
-            }
-        });
-        
-        holder.ivMore.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onMoreClick(music, position);
-            }
-        });
+        holder.bind(music, position);
     }
 
     @Override
     public int getItemCount() {
         return musicList != null ? musicList.size() : 0;
     }
-    
-    public void updateData(List<Music> newMusicList) {
-        this.musicList = newMusicList;
+
+    public void updateData(List<Music> newList) {
+        this.musicList = newList;
         notifyDataSetChanged();
     }
 
-    static class ChartViewHolder extends RecyclerView.ViewHolder {
-        TextView tvRank;
-        ImageView ivThumbnail;
-        ImageView ivPlayIndicator;
-        TextView tvTitle;
-        TextView tvArtists;
-        ImageView ivMore;
+    // Add this method to fix the error
+    public List<Music> getMusicList() {
+        return musicList;
+    }
+
+    class ChartViewHolder extends RecyclerView.ViewHolder {
+        private final TextView tvPosition;
+        private final TextView tvTitle;
+        private final TextView tvArtist;
+        private final ImageView ivThumbnail;
+        private final ImageButton btnMore;
 
         ChartViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvRank = itemView.findViewById(R.id.tvRank);
-            ivThumbnail = itemView.findViewById(R.id.ivThumbnail);
-            ivPlayIndicator = itemView.findViewById(R.id.ivPlayIndicator);
+            tvPosition = itemView.findViewById(R.id.tvPosition);
             tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvArtists = itemView.findViewById(R.id.tvArtists);
-            ivMore = itemView.findViewById(R.id.ivMore);
+            tvArtist = itemView.findViewById(R.id.tvArtist);
+            ivThumbnail = itemView.findViewById(R.id.ivThumbnail);
+            btnMore = itemView.findViewById(R.id.btnMore);
+        }
+
+        void bind(final Music music, final int position) {
+            // Set position number (add 1 because positions are 0-based)
+            tvPosition.setText(String.valueOf(position + 1));
+            
+            // Set title and artist
+            tvTitle.setText(music.getTitle());
+            tvArtist.setText(music.getArtists());
+            
+            // Load thumbnail with Glide
+            if (music.getThumbnailM() != null && !music.getThumbnailM().isEmpty()) {
+                Glide.with(context)
+                        .load(music.getThumbnailM())
+                        .apply(RequestOptions.bitmapTransform(new RoundedCorners(16)))
+                        .placeholder(R.drawable.placeholder_album)
+                        .error(R.drawable.placeholder_album)
+                        .into(ivThumbnail);
+            } else {
+                ivThumbnail.setImageResource(R.drawable.placeholder_album);
+            }
+            
+            // Set click listeners
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onItemClick(music, position);
+                }
+            });
+            
+            btnMore.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onMoreClick(music, position);
+                }
+            });
         }
     }
 }

@@ -90,6 +90,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <service
+            android:name=".services.MusicPlaybackService"
+            android:enabled="true"
+            android:exported="false" />
+
         <receiver android:name=".receivers.SMSReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
@@ -104,6 +109,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.MediaButtonReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
     </application>

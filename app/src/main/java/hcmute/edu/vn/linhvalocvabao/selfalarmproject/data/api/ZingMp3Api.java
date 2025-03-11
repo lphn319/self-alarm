@@ -46,6 +46,7 @@ public class ZingMp3Api {
      */
     public LiveData<String> getSongStreamUrl(String id) {
         MutableLiveData<String> result = new MutableLiveData<>();
+        Log.d(TAG, "Getting stream URL for song ID: " + id);
 
         CryptoUtils.SignatureResult sigResult = CryptoUtils.hashParamWithCtime(Constants.SONG_PATH, id);
         
@@ -58,16 +59,32 @@ public class ZingMp3Api {
             @Override
             public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
                 try {
-                    if (response.isSuccessful() && response.body() != null && response.body().getErr() == 0 && response.body().getData() != null) {
+                    Log.d(TAG, "Stream URL response: " + response.body());
+                    if (response.isSuccessful() && response.body() != null && 
+                        response.body().getErr() == 0 && response.body().getData() != null) {
+                        
                         JsonElement data = response.body().getData();
                         if (data.isJsonObject()) {
                             JsonObject dataObj = data.getAsJsonObject();
-                            if (dataObj.has("128") && !dataObj.get("128").isJsonNull()) {
-                                result.postValue(dataObj.get("128").getAsString());
+                            String url = null;
+                            
+                            // Try different quality options
+                            if (dataObj.has("128")) {
+                                url = dataObj.get("128").getAsString();
+                            } else if (dataObj.has("320")) {
+                                url = dataObj.get("320").getAsString();
+                            } else if (dataObj.has("64")) {
+                                url = dataObj.get("64").getAsString();
+                            }
+                            
+                            if (url != null && !url.isEmpty()) {
+                                Log.d(TAG, "Found stream URL: " + url);
+                                result.postValue(url);
                                 return;
                             }
                         }
                     }
+                    Log.e(TAG, "No valid stream URL found in response");
                     result.postValue(null);
                 } catch (Exception e) {
                     Log.e(TAG, "Error parsing stream URL response", e);
@@ -396,6 +413,73 @@ public class ZingMp3Api {
             public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "Error getting music from album", t);
                 result.postValue(new ArrayList<>());
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Get song information
+     */
+    public LiveData<Music> getSongInfo(String id) {
+        MutableLiveData<Music> result = new MutableLiveData<>();
+        Log.d(TAG, "Getting song info for ID: " + id);
+
+        CryptoUtils.SignatureResult sigResult = CryptoUtils.hashParamWithCtime(Constants.SONG_INFO_PATH, id);
+        
+        Map<String, String> params = new HashMap<>();
+        params.put("id", id);
+        params.put("sig", sigResult.getSignature());
+        params.put("ctime", sigResult.getCtime());
+
+        service.getSongInfo(params).enqueue(new Callback<BaseResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+                try {
+                    Log.d(TAG, "Song info response: " + response.body());
+                    if (response.isSuccessful() && response.body() != null && 
+                        response.body().getErr() == 0 && response.body().getData() != null) {
+                        
+                        JsonObject songObj = response.body().getData().getAsJsonObject();
+                        int streamingStatus = JsonUtils.getInt(songObj, "streamingStatus", 0);
+                        
+                        if (streamingStatus == 1) {
+                            Music music = new Music();
+                            music.setId(JsonUtils.getString(songObj, "encodeId", ""));
+                            music.setTitle(JsonUtils.getString(songObj, "title", "Untitled"));
+                            music.setArtists(JsonUtils.getString(songObj, "artistsNames", "Unknown Artist"));
+                            music.setThumbnail(JsonUtils.getString(songObj, "thumbnail", ""));
+                            music.setThumbnailM(JsonUtils.getString(songObj, "thumbnailM", ""));
+
+                            JsonObject albumObj = JsonUtils.getJsonObject(songObj, "album");
+                            if (albumObj != null) {
+                                Album album = new Album();
+                                album.setId(JsonUtils.getString(albumObj, "encodeId", ""));
+                                album.setTitle(JsonUtils.getString(albumObj, "title", "Untitled Album"));
+                                album.setArtists(JsonUtils.getString(albumObj, "artistsNames", "Unknown Artist"));
+                                album.setThumbnail(JsonUtils.getString(albumObj, "thumbnail", ""));
+                                album.setThumbnailM(JsonUtils.getString(albumObj, "thumbnailM", ""));
+                                album.setShortDescription(JsonUtils.getString(albumObj, "sortDescription", ""));
+                                music.setAlbum(album);
+                            }
+                            
+                            result.postValue(music);
+                            return;
+                        }
+                    }
+                    Log.e(TAG, "Invalid song info response");
+                    result.postValue(null);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing song info response", e);
+                    result.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Error getting song info", t);
+                result.postValue(null);
             }
         });
 
