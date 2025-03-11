@@ -9,6 +9,7 @@ activity = "1.10.0"
 constraintlayout = "2.2.0"
 androidx-media = "1.6.0"
 androidx-work = "2.8.1"
+securityCrypto = "1.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,6 +21,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-media = { module = "androidx.media:media", version.ref = "androidx-media" }
 androidx-work = { module = "androidx.work:work-runtime", version.ref = "androidx-work" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
