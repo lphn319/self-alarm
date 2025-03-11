@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +46,8 @@ public class SMSFragment extends Fragment {
     private SMSAdapter smsAdapter;
     private List<SMS> smsList;
     private FloatingActionButton fabNewMessage;
+    private ProgressBar progressBar;
+    private static final int BATCH_SIZE = 50;
 
     // BroadcastReceiver for new SMS messages
     private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
@@ -62,6 +66,9 @@ public class SMSFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sms, container, false);
+
+        // Initialize progress bar
+        progressBar = view.findViewById(R.id.progress_bar);
 
         // Ánh xạ RecyclerView
         recyclerViewSMS = view.findViewById(R.id.recycler_view_sms);
@@ -145,54 +152,87 @@ public class SMSFragment extends Fragment {
     }
 
     private void loadSmsMessages() {
+        progressBar.setVisibility(View.VISIBLE);
         smsList.clear();
 
-        // Use ContentResolver to query SMS inbox
-        Cursor cursor = getActivity().getContentResolver().query(
-                Uri.parse("content://sms/inbox"),
-                null, null, null, "date DESC");
+        new AsyncTask<Void, List<SMS>, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                List<SMS> batchList = new ArrayList<>();
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                int addressIndex = cursor.getColumnIndex("address");
-                int bodyIndex = cursor.getColumnIndex("body");
+                try (Cursor cursor = getActivity().getContentResolver().query(
+                        Uri.parse("content://sms/inbox"),
+                        null, null, null, "date DESC")) {
 
-                if (addressIndex != -1 && bodyIndex != -1) {
-                    String address = cursor.getString(addressIndex);
-                    String body = cursor.getString(bodyIndex);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        do {
+                            int addressIndex = cursor.getColumnIndex("address");
+                            int bodyIndex = cursor.getColumnIndex("body");
 
-                    // Try to resolve contact name
-                    String contactName = getContactName(address);
-                    String sender = contactName != null ? contactName : address;
+                            if (addressIndex != -1 && bodyIndex != -1) {
+                                String address = cursor.getString(addressIndex);
+                                String body = cursor.getString(bodyIndex);
 
-                    // Add to list
-                    smsList.add(new SMS(sender, body));
+                                String sender = address;
+                                // Only resolve contact name if we have a valid phone number
+                                if (android.telephony.PhoneNumberUtils.isGlobalPhoneNumber(address)) {
+                                    String contactName = getContactName(address);
+                                    if (contactName != null) {
+                                        sender = contactName;
+                                    }
+                                }
+
+                                batchList.add(new SMS(sender, body));
+
+                                if (batchList.size() >= BATCH_SIZE) {
+                                    publishProgress(new ArrayList<>(batchList));
+                                    batchList.clear();
+                                }
+                            }
+                        } while (cursor.moveToNext());
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error loading SMS messages", e);
                 }
-            } while (cursor.moveToNext());
 
-            cursor.close();
-        }
+                if (!batchList.isEmpty()) {
+                    publishProgress(batchList);
+                }
 
-        // Notify adapter of data change
-        smsAdapter.notifyDataSetChanged();
+                return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(List<SMS>... values) {
+                if (values[0] != null) {
+                    smsList.addAll(values[0]);
+                    smsAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                progressBar.setVisibility(View.GONE);
+            }
+        }.execute();
     }
 
     @SuppressLint("Range")
     private String getContactName(String phoneNumber) {
         String contactName = null;
 
-        // Query the contacts for the phone number
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(phoneNumber));
-        Cursor cursor = getActivity().getContentResolver().query(
-                uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+        try (Cursor cursor = getActivity().getContentResolver().query(
+                Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                        Uri.encode(phoneNumber)),
+                new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME},
+                null, null, null)) {
 
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
                 contactName = cursor.getString(
                         cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
             }
-            cursor.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting contact name", e);
         }
 
         return contactName;
