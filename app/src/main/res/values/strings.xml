@@ -2,4 +2,12 @@
     <string name="app_name">Self Alarm Project</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+    <!-- Music player strings -->
+    <string name="album_cover">Album Cover</string>
+    <string name="more_options">More Options</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 </resources>
