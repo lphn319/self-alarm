@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="light_gray">#FFEEEEEE</color>
-    <color name="gray">#FF888888</color>
-    <color name="red">#FFE53935</color>
-    <color name="green">#FF43A047</color>
-    <color name="blue">#FF1E88E5</color>
-    <color name="amber">#FFFFB300</color>
+    <!-- Bộ màu hoạt hình -->
+    <color name="anime_primary_blue">#3498DB</color>
+    <color name="anime_primary_dark_blue">#2980B9</color>
+    <color name="anime_accent_pink">#FF69B4</color>
+    <color name="anime_accent_light_pink">#FFB6C1</color>
+    <color name="anime_background_soft_gray">#F5F5F5</color>
+    <color name="anime_text_dark">#333333</color>
+    <color name="anime_text_light">#666666</color>
+    <color name="anime_highlight_yellow">#FFD700</color>
+    <color name="anime_success_green">#2ECC71</color>
+    <color name="anime_error_red">#E74C3C</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Màu trạng thái pin -->
+    <color name="battery_normal">#2ECC71</color> <!-- Xanh lá (an toàn) -->
+    <color name="battery_low">#F39C12</color> <!-- Cam (cảnh báo) -->
+    <color name="battery_critical">#E74C3C</color> <!-- Đỏ (nguy hiểm) -->
 </resources>

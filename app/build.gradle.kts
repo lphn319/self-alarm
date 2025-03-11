@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "hcmute.edu.vn.linhvalocvabao.selfalarmproject"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -43,7 +44,10 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.androidx.media)
     implementation(libs.androidx.work)
-
+    implementation(libs.androidx.core)
+    implementation(libs.recyclerview)
+    implementation(libs.cardview)
+    implementation(libs.gson)
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
@@ -71,5 +75,4 @@ dependencies {
 
     // ui
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-
 }
