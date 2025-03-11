@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -24,6 +26,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,8 @@ import hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.BatteryOptimizatio
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.BlacklistService;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.NotificationHelper;
 
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSIONS = 1001;
@@ -55,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Mặc định load fragment Music khi mở app
+        // Mặc định load fragment Music Chart khi mở app
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MusicPlayerFragment())
+                    .replace(R.id.fragment_container, new MusicChartFragment())
                     .commit();
+            bottomNavigationView.setSelectedItemId(R.id.nav_music);
         }
 
         // Xử lý sự kiện chuyển fragment khi chọn item bottom navigation
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 // Chọn fragment tương ứng với item được chọn
                 int itemId = item.getItemId();
                 if (itemId == R.id.nav_music) {
-                    selectedFragment = new MusicPlayerFragment();
+                    selectedFragment = new MusicChartFragment();
                 } else if (itemId == R.id.nav_schedule) {
                     selectedFragment = new ScheduleFragment();
                 } else if (itemId == R.id.nav_sms_call) {
