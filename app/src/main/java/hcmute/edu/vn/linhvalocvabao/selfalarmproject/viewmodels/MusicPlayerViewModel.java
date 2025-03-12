@@ -1,5 +1,6 @@
 package hcmute.edu.vn.linhvalocvabao.selfalarmproject.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,6 +33,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
     
     private static final String TAG = "MusicPlayerViewModel";
     
+    @SuppressLint("StaticFieldLeak")
     private MusicPlaybackService musicService;
     private boolean serviceBound = false;
     
@@ -109,9 +111,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             });
             
             // Observe playback progress
-            musicService.getPlaybackProgress().observeForever(progress -> {
-                currentProgress.setValue(progress);
-            });
+            musicService.getPlaybackProgress().observeForever(currentProgress::setValue);
             
             // Initialize playlist
             playlist.setValue(musicService.getPlaylist());
@@ -183,7 +183,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
     
     // Methods for controlling playback
     
-    public void playMusic(Music music) {
+    public void prepareMusic(Music music) {
         if (musicService == null) {
             Log.e(TAG, "Music service is not bound");
             errorMessage.setValue("Music service is not available");
@@ -191,6 +191,53 @@ public class MusicPlayerViewModel extends AndroidViewModel {
         }
         
         if (music == null || music.getId() == null) {
+            Log.e(TAG, "Invalid music object");
+            errorMessage.setValue("Cannot prepare this song");
+            return;
+        }
+        
+        Log.d(TAG, "Preparing music: " + music.getTitle());
+        List<Music> currentPlaylist = playlist.getValue();
+        if (currentPlaylist != null) {
+            int index = -1;
+            // Check if the song is already in the playlist
+            for (int i = 0; i < currentPlaylist.size(); i++) {
+                if (currentPlaylist.get(i).getId().equals(music.getId())) {
+                    index = i;
+                    break;
+                }
+            }
+            
+            if (index >= 0) {
+                // Song exists in playlist, prepare that position
+                Log.d(TAG, "Preparing existing song from position: " + index);
+                musicService.preparePosition(index);
+            } else {
+                // Create a new playlist with just this song
+                Log.d(TAG, "Creating new playlist with single song");
+                List<Music> newPlaylist = new ArrayList<>();
+                newPlaylist.add(music);
+                musicService.setPlaylist(newPlaylist, 0);
+                playlist.setValue(newPlaylist);
+            }
+        } else {
+            // No current playlist, create one
+            Log.d(TAG, "Creating first playlist");
+            List<Music> newPlaylist = new ArrayList<>();
+            newPlaylist.add(music);
+            musicService.setPlaylist(newPlaylist, 0);
+            playlist.setValue(newPlaylist);
+        }
+    }
+    
+    public void playMusic(Music music) {
+        if (musicService == null) {
+            Log.e(TAG, "Music service is not bound");
+            errorMessage.setValue("Music service is not available");
+            return;
+        }
+        
+        if (music == null) {
             Log.e(TAG, "Invalid music object");
             errorMessage.setValue("Cannot play this song");
             return;
@@ -241,7 +288,14 @@ public class MusicPlayerViewModel extends AndroidViewModel {
     
     public void play() {
         if (musicService != null) {
-            musicService.play();
+            try {
+                musicService.play();
+            } catch (Exception e) {
+                Log.e(TAG, "Error playing music", e);
+                errorMessage.setValue("Error playing music: " + e.getMessage());
+            }
+        } else {
+            errorMessage.setValue("Music service not available");
         }
     }
     

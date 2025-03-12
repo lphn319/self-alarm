@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -106,6 +107,44 @@ public class MainActivity extends AppCompatActivity {
 
         // Kiểm tra và yêu cầu các quyền cần thiết
         requestRequiredPermissions();
+    }
+
+    public void showMusicPlayer() {
+        // Hide bottom navigation before transaction for smoother transition
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setVisibility(View.GONE);
+        }
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+        
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in_up,
+                        R.anim.slide_out_down,
+                        R.anim.slide_in_down,
+                        R.anim.slide_out_up
+                )
+                .replace(R.id.fragment_container, new MusicPlayerFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // When back is pressed, check if we need to restore bottom navigation
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            // Will be going back to a previous fragment
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (currentFragment instanceof MusicPlayerFragment) {
+                // Coming back from Music Player, ensure bottom nav is visible
+                if (bottomNavigationView != null) {
+                    bottomNavigationView.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        super.onBackPressed();
     }
 
     private void startServices() {

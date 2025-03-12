@@ -4,76 +4,55 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.view.KeyEvent;
+import android.util.Log;
+
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.MusicPlaybackService;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
-    
+    private static final String TAG = "MediaButtonReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Intent.ACTION_MEDIA_BUTTON.equals(intent.getAction())) {
-            KeyEvent event = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
-            if (event != null) {
-                handleMediaButtonEvent(context, event);
-            }
-        }
-    }
-    
-    private void handleMediaButtonEvent(Context context, KeyEvent event) {
-        // Only handle key down actions
-        if (event.getAction() != KeyEvent.ACTION_DOWN) {
+        if (intent == null || intent.getAction() == null) {
             return;
         }
+
+        Log.d(TAG, "Received action: " + intent.getAction());
         
-        // Create intent for the service
-        Intent serviceIntent = new Intent(context, 
-                hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.MusicPlaybackService.class);
+        // Forward the action to the service
+        Intent serviceIntent = new Intent(context, MusicPlaybackService.class);
+        serviceIntent.setAction(intent.getAction());
         
-        switch (event.getKeyCode()) {
-            case KeyEvent.KEYCODE_MEDIA_PLAY:
-                serviceIntent.setAction("ACTION_PLAY");
-                context.startService(serviceIntent);
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                serviceIntent.setAction("ACTION_PAUSE");
-                context.startService(serviceIntent);
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                serviceIntent.setAction("ACTION_TOGGLE_PLAYBACK");
-                context.startService(serviceIntent);
-                break;
-            case KeyEvent.KEYCODE_MEDIA_NEXT:
-                serviceIntent.setAction("ACTION_NEXT");
-                context.startService(serviceIntent);
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                serviceIntent.setAction("ACTION_PREVIOUS");
-                context.startService(serviceIntent);
-                break;
-            case KeyEvent.KEYCODE_MEDIA_STOP:
-                serviceIntent.setAction("ACTION_STOP");
-                context.startService(serviceIntent);
-                break;
+        // Start the service to handle the action
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
         }
     }
-    
+
+    // Instead of trying to access the callback directly, we'll pass the intent to the service
+    // and let it handle the action
     public static void handleIntent(MediaSessionCompat mediaSession, Intent intent) {
-        if (mediaSession != null && intent != null) {
+        if (intent != null && intent.getAction() != null) {
             String action = intent.getAction();
-            if (action != null) {
-                switch (action) {
-                    case "TOGGLE_PLAYBACK":
-                        mediaSession.getController().getTransportControls().play();
-                        break;
-                    case "NEXT":
-                        mediaSession.getController().getTransportControls().skipToNext();
-                        break;
-                    case "PREVIOUS":
-                        mediaSession.getController().getTransportControls().skipToPrevious();
-                        break;
-                    case "STOP":
-                        mediaSession.getController().getTransportControls().stop();
-                        break;
-                }
+            Log.d(TAG, "Handling media session action: " + action);
+            
+            // The service will have to handle these actions in onStartCommand
+            // We don't need to access the callback directly
+            switch (action) {
+                case "ACTION_PLAY":
+                case "ACTION_PAUSE":
+                case "ACTION_TOGGLE_PLAYBACK":
+                case "ACTION_NEXT":
+                case "ACTION_PREVIOUS":
+                case "ACTION_STOP":
+                    // These actions are handled in MusicPlaybackService.onStartCommand
+                    Log.d(TAG, "Action will be handled by service: " + action);
+                    break;
+                default:
+                    Log.d(TAG, "Unknown action: " + action);
+                    break;
             }
         }
     }

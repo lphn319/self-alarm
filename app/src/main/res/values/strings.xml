@@ -10,4 +10,9 @@
     <string name="pause">Pause</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="repeat">Repeat</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="back">Back</string>
+    <string name="options">Options</string>
 </resources>
