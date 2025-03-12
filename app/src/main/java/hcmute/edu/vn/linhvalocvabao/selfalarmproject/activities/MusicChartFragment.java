@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapters.ChartAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.ChartAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.api.ZingMp3Api;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.model.Music;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.NetworkUtils;
