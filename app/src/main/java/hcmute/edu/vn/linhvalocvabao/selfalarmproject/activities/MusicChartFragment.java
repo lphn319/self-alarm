@@ -1,6 +1,7 @@
 package hcmute.edu.vn.linhvalocvabao.selfalarmproject.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,9 +164,18 @@ public class MusicChartFragment extends Fragment {
     
     private void playMusic(Music music) {
         if (music != null && music.getId() != null) {
-            // Use ViewModel to play the music
-            musicPlayerViewModel.playMusic(music);
-            Toast.makeText(requireContext(), "Playing: " + music.getTitle(), Toast.LENGTH_SHORT).show();
+            try {
+                // Prepare the music without auto-playing
+                musicPlayerViewModel.prepareMusic(music);
+                
+                // Navigate to player fragment - it will handle auto-play
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).showMusicPlayer();
+                }
+            } catch (Exception e) {
+                Log.e("MusicChartFragment", "Error playing music", e);
+                Toast.makeText(requireContext(), "Error playing music: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
     
