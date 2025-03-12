@@ -213,14 +213,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // For WRITE_SETTINGS permission (needed for brightness control)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.System.canWrite(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
-                Toast.makeText(this, "Please allow modify system settings for brightness control",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            if (!Settings.System.canWrite(this)) {
+//                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+//                startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
+//                Toast.makeText(this, "Please allow modify system settings for brightness control",
+//                        Toast.LENGTH_LONG).show();
+//            }
+//        }
     }
 
     @Override
