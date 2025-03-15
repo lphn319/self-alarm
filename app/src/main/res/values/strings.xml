@@ -15,4 +15,34 @@
     <string name="play_pause">Play/Pause</string>
     <string name="back">Back</string>
     <string name="options">Options</string>
+
+    <string name="event_saved">Sự kiện đã được lưu</string>
+    <string name="event_deleted">Sự kiện đã được xóa</string>
+    <string name="event_updated">Sự kiện đã được cập nhật</string>
+    <string name="title_required">Tiêu đề là bắt buộc</string>
+    <string name="delete_event">Xóa sự kiện</string>
+    <string name="delete_confirmation">Bạn có chắc chắn muốn xóa sự kiện này?</string>
+    <string name="delete">Xóa</string>
+    <string name="cancel">Hủy</string>
+    <string name="upcoming_event">Sự kiện sắp diễn ra</string>
+    <string name="processing_event">Đang xử lý sự kiện</string>
+    <string name="reminder_minutes_before">%d phút trước</string>
+    <string name="reminder_hour_before">1 giờ trước</string>
+    <string name="reminder_hours_before">%d giờ trước</string>
+    <string name="reminder_hours_minutes_before">%d giờ %d phút trước</string>
+    <string name="reminder_days_before">%d ngày trước</string>
+    <string name="today">Hôm nay</string>
+    <string name="add_event">Thêm sự kiện</string>
+    <string name="edit_event">Sửa sự kiện</string>
+    <string name="event_title">Tiêu đề sự kiện</string>
+    <string name="event_description">Mô tả</string>
+    <string name="event_location">Địa điểm</string>
+    <string name="start_time">Thời gian bắt đầu</string>
+    <string name="end_time">Thời gian kết thúc</string>
+    <string name="set_reminder">Đặt nhắc nhở</string>
+    <string name="save">LƯU</string>
+    <string name="events">Sự kiện</string>
+    <string name="invalid_end_time">Thời gian kết thúc không thể trước thời gian bắt đầu</string>
+    <string name="invalid_end_date">Ngày kết thúc không thể trước ngày bắt đầu</string>
+
 </resources>

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <!-- Internet permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -82,6 +85,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activities.AddEditEventFragment"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.EventDetailFragment"
+            android:exported="false" />
+
         <service
             android:name=".services.BlacklistService"
             android:enabled="true"
@@ -91,6 +102,10 @@
         <service
             android:name=".services.MusicPlaybackService"
             android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".services.ReminderService"
             android:exported="false" />
 
         <receiver
@@ -125,6 +140,19 @@
                 <action android:name="ACTION_STOP" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".receivers.AlarmReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

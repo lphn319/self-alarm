@@ -1,66 +1,143 @@
 package hcmute.edu.vn.linhvalocvabao.selfalarmproject.activities;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.MenuHost;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.EventAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.db.DatabaseHelper;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.Event;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScheduleFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ScheduleFragment extends Fragment {
+import java.util.Calendar;
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class ScheduleFragment extends Fragment  {
+    private CalendarView calendarView;
+    private RecyclerView recyclerView;
+    private EventAdapter adapter;
+    private DatabaseHelper dbHelper;
+    private Calendar selectedDate;
 
     public ScheduleFragment() {
-        // Required empty public constructor
+        // Required empty constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ScheduleFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ScheduleFragment newInstance(String param1, String param2) {
-        ScheduleFragment fragment = new ScheduleFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_schedule, container, false);
+
+        // Initialize components
+        calendarView = view.findViewById(R.id.calendar_view);
+        recyclerView = view.findViewById(R.id.recycler_events);
+        FloatingActionButton fab = view.findViewById(R.id.fab_add_event);
+
+        // Set up database
+        dbHelper = new DatabaseHelper(requireContext());
+
+        // Set up RecyclerView
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        // Initialize with current date
+        selectedDate = Calendar.getInstance();
+        loadEventsForDate(selectedDate);
+
+        // Set calendar listener
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            selectedDate.set(Calendar.YEAR, year);
+            selectedDate.set(Calendar.MONTH, month);
+            selectedDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            loadEventsForDate(selectedDate);
+        });
+
+        // Set FAB listener
+        fab.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putLong("selectedDate", selectedDate.getTimeInMillis());
+
+            AddEditEventFragment addEditEventFragment = new AddEditEventFragment();
+            addEditEventFragment.setArguments(bundle);
+
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, addEditEventFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        return view;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Sử dụng MenuProvider để xử lý menu
+        MenuHost menuHost = requireActivity();
+        menuHost.addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_main, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_today) {
+                    // Nhảy đến ngày hôm nay
+                    selectedDate = Calendar.getInstance();
+                    calendarView.setDate(selectedDate.getTimeInMillis());
+                    loadEventsForDate(selectedDate);
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Reload events when returning to this fragment
+        loadEventsForDate(selectedDate);
+    }
+
+    private void loadEventsForDate(Calendar date) {
+        List<Event> events = dbHelper.getEventsForDay(date);
+
+        if (adapter == null) {
+            adapter = new EventAdapter(requireContext(), events);
+            adapter.setOnItemClickListener(event -> {
+                Bundle bundle = new Bundle();
+                bundle.putLong("eventId", event.getId());
+
+                EventDetailFragment eventDetailFragment = new EventDetailFragment();
+                eventDetailFragment.setArguments(bundle);
+
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, eventDetailFragment)
+                        .addToBackStack(null)
+                        .commit();
+            });
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.updateData(events);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_schedule, container, false);
     }
 }
