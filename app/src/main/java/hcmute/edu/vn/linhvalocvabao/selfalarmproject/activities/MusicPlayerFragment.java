@@ -270,7 +270,7 @@ public class MusicPlayerFragment extends Fragment {
         seconds = seconds % 60;
         return String.format("%d:%02d", minutes, seconds);
     }
-
+    
     @Override
     public void onStart() {
         super.onStart();
@@ -299,7 +299,7 @@ public class MusicPlayerFragment extends Fragment {
             }
         }
     }
-
+    
     @Override
     public void onStop() {
         super.onStop();

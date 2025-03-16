@@ -82,12 +82,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name=".services.BatteryOptimizationService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
+        <activity
+            android:name=".activities.TestActivity"
+            android:exported="false">
+        </activity>
 
         <service
             android:name=".services.BlacklistService"
@@ -150,6 +148,20 @@
             <intent-filter>
                 <action android:name="android.intent.action.HEADSET_PLUG" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.MediaButtonReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+                <action android:name="ACTION_PLAY" />
+                <action android:name="ACTION_PAUSE" />
+                <action android:name="ACTION_TOGGLE_PLAYBACK" />
+                <action android:name="ACTION_NEXT" />
+                <action android:name="ACTION_PREVIOUS" />
+                <action android:name="ACTION_STOP" />
             </intent-filter>
         </receiver>
     </application>
