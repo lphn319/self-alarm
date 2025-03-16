@@ -14,6 +14,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -173,25 +174,26 @@ public class MusicPlaybackService extends Service implements
             Log.d(TAG, "Received action: " + action);
 
             switch (action) {
-                case "ACTION_PLAY":
+                case MediaButtonReceiver.ACTION_PLAY:
                     play();
                     break;
-                case "ACTION_PAUSE":
+                case MediaButtonReceiver.ACTION_PAUSE:
                     pause();
                     break;
-                case "ACTION_TOGGLE_PLAYBACK":
+                case MediaButtonReceiver.ACTION_TOGGLE_PLAYBACK:
                     playPause();
                     break;
-                case "ACTION_NEXT":
+                case MediaButtonReceiver.ACTION_NEXT:
                     playNext();
                     break;
-                case "ACTION_PREVIOUS":
+                case MediaButtonReceiver.ACTION_PREVIOUS:
                     playPrevious();
                     break;
-                case "ACTION_STOP":
+                case MediaButtonReceiver.ACTION_STOP:
                     stop();
                     break;
-                default:
+                case Intent.ACTION_MEDIA_BUTTON:
+                    // Just pass this along to our MediaButtonReceiver
                     MediaButtonReceiver.handleIntent(mediaSession, intent);
                     break;
             }
@@ -441,17 +443,25 @@ public class MusicPlaybackService extends Service implements
     }
 
     public void playNext() {
+        Log.d(TAG, "Playing next track");
         if (currentPosition < playlist.size() - 1) {
             playFromPosition(currentPosition + 1);
+        } else if (currentPosition == playlist.size() - 1 && playlist.size() > 0) {
+            // If at last song, loop to first song
+            playFromPosition(0);
         }
     }
 
     public void playPrevious() {
+        Log.d(TAG, "Playing previous track");
         // If we're more than 3 seconds into the song, restart it
         if (mediaPlayer.getCurrentPosition() > 3000) {
             mediaPlayer.seekTo(0);
         } else if (currentPosition > 0) {
             playFromPosition(currentPosition - 1);
+        } else if (currentPosition == 0 && playlist.size() > 0) {
+            // If at first song, loop to last song
+            playFromPosition(playlist.size() - 1);
         }
     }
 
@@ -537,19 +547,21 @@ public class MusicPlaybackService extends Service implements
         Music song = playlist.get(currentPosition);
         boolean isPlaying = mediaPlayer.isPlaying();
 
-        // Create content intent that opens the app
+        // Create content intent that opens the music player fragment
         Intent contentIntent = new Intent(this, MainActivity.class);
         contentIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Add action to indicate we want to show the music player
+        contentIntent.putExtra("OPEN_MUSIC_PLAYER", true);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(this, 0, contentIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Create action intents
+        // Create action intents using constants from MediaButtonReceiver
         Intent prevIntent = new Intent(this, MediaButtonReceiver.class);
-        prevIntent.setAction("ACTION_PREVIOUS");
+        prevIntent.setAction(MediaButtonReceiver.ACTION_PREVIOUS);
         Intent playPauseIntent = new Intent(this, MediaButtonReceiver.class);
-        playPauseIntent.setAction(isPlaying ? "ACTION_PAUSE" : "ACTION_PLAY");
+        playPauseIntent.setAction(isPlaying ? MediaButtonReceiver.ACTION_PAUSE : MediaButtonReceiver.ACTION_PLAY);
         Intent nextIntent = new Intent(this, MediaButtonReceiver.class);
-        nextIntent.setAction("ACTION_NEXT");
+        nextIntent.setAction(MediaButtonReceiver.ACTION_NEXT);
 
         PendingIntent prevPendingIntent = PendingIntent.getBroadcast(this, 1, prevIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -612,11 +624,7 @@ public class MusicPlaybackService extends Service implements
                 startForeground(NOTIFICATION_ID, notification);
             } else if (notificationManager != null) {
                 // For API 29+ devices, we need to use stopForeground(STOP_FOREGROUND_DETACH) to keep notification visible
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    stopForeground(Service.STOP_FOREGROUND_DETACH);
-                } else {
-                    stopForeground(false);
-                }
+                stopForeground(Service.STOP_FOREGROUND_DETACH);
                 notificationManager.notify(NOTIFICATION_ID, notification);
             }
         } catch (Exception e) {

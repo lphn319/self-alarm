@@ -31,7 +31,7 @@ import hcmute.edu.vn.linhvalocvabao.selfalarmproject.viewmodels.MusicPlayerViewM
 @AndroidEntryPoint
 public class MusicPlayerFragment extends Fragment {
     private static final String TAG = "MusicPlayerFragment";
-    
+
     private ImageView ivAlbumArt;
     private TextView tvTitle;
     private TextView tvArtist;
@@ -45,7 +45,7 @@ public class MusicPlayerFragment extends Fragment {
     private ImageButton btnRepeat;
     private ImageButton btnBack;
     private ImageButton btnOptions;
-    
+
     private MusicPlayerViewModel viewModel;
     private boolean userIsSeeking = false;
     private boolean autoPlayOnLoad = true; // Flag to auto-play when music is loaded
@@ -60,16 +60,29 @@ public class MusicPlayerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         // Hide bottom navigation when music player is displayed
         BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
             bottomNavigationView.setVisibility(View.GONE);
         }
-        
+
         initViews(view);
         setupViewModel();
         setupListeners();
+        
+        // Check if we need to refresh the UI with existing music data
+        if (viewModel != null) {
+            Music currentMusic = viewModel.getCurrentMusic().getValue();
+            if (currentMusic != null) {
+                updateMusicInfo(currentMusic);
+            }
+            
+            PlaybackState state = viewModel.getPlaybackState().getValue();
+            if (state != null) {
+                updatePlaybackState(state);
+            }
+        }
     }
 
     private void initViews(View view) {
@@ -86,7 +99,7 @@ public class MusicPlayerFragment extends Fragment {
         btnRepeat = view.findViewById(R.id.btnRepeat);
         btnBack = view.findViewById(R.id.btnBack);
         btnOptions = view.findViewById(R.id.btnOptions);
-        
+
         // Set initial values
         tvCurrentTime.setText("0:00");
         tvTotalDuration.setText("0:00");
@@ -94,20 +107,20 @@ public class MusicPlayerFragment extends Fragment {
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(requireActivity()).get(MusicPlayerViewModel.class);
-        
+
         // Observe current music
         viewModel.getCurrentMusic().observe(getViewLifecycleOwner(), this::updateMusicInfo);
-        
+
         // Observe playback progress
         viewModel.getCurrentProgress().observe(getViewLifecycleOwner(), this::updateProgress);
-        
+
         // Observe duration
         viewModel.getDuration().observe(getViewLifecycleOwner(), this::updateDuration);
-        
+
         // Observe playback state
         viewModel.getPlaybackState().observe(getViewLifecycleOwner(), state -> {
             updatePlaybackState(state);
-            
+
             // Auto-play music when prepared
             if (state == PlaybackState.PAUSED && autoPlayOnLoad) {
                 // Use a small delay to ensure UI is ready
@@ -118,7 +131,7 @@ public class MusicPlayerFragment extends Fragment {
                 }, 300);
             }
         });
-        
+
         // Observe errors
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), this::showError);
     }
@@ -129,29 +142,29 @@ public class MusicPlayerFragment extends Fragment {
             Log.d(TAG, "Play/Pause button clicked");
             viewModel.playPause();
         });
-        
+
         // Next button
         btnNext.setOnClickListener(v -> {
             Log.d(TAG, "Next button clicked");
             viewModel.skipToNext();
         });
-        
+
         // Previous button
         btnPrevious.setOnClickListener(v -> {
             Log.d(TAG, "Previous button clicked");
             viewModel.skipToPrevious();
         });
-        
+
         // Shuffle button
         btnShuffle.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Shuffle not implemented yet", Toast.LENGTH_SHORT).show();
         });
-        
+
         // Repeat button
         btnRepeat.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Repeat not implemented yet", Toast.LENGTH_SHORT).show();
         });
-        
+
         // Back button
         btnBack.setOnClickListener(v -> {
             // Show bottom navigation before going back
@@ -161,12 +174,12 @@ public class MusicPlayerFragment extends Fragment {
             }
             requireActivity().onBackPressed();
         });
-        
+
         // Options button
         btnOptions.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Options not implemented yet", Toast.LENGTH_SHORT).show();
         });
-        
+
         // Seekbar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -194,15 +207,15 @@ public class MusicPlayerFragment extends Fragment {
             Log.d(TAG, "Updating music info: " + music.getTitle());
             tvTitle.setText(music.getTitle());
             tvArtist.setText(music.getArtists());
-            
+
             if (music.getThumbnailM() != null && !music.getThumbnailM().isEmpty()) {
                 try {
                     Glide.with(requireContext())
-                        .load(music.getThumbnailM())
-                        .apply(new RequestOptions()
-                            .placeholder(R.drawable.placeholder_album)
-                            .error(R.drawable.placeholder_album))
-                        .into(ivAlbumArt);
+                            .load(music.getThumbnailM())
+                            .apply(new RequestOptions()
+                                    .placeholder(R.drawable.placeholder_album)
+                                    .error(R.drawable.placeholder_album))
+                            .into(ivAlbumArt);
                 } catch (Exception e) {
                     Log.e(TAG, "Error loading album art", e);
                     ivAlbumArt.setImageResource(R.drawable.placeholder_album);
@@ -244,7 +257,7 @@ public class MusicPlayerFragment extends Fragment {
             btnPlayPause.setImageResource(R.drawable.exo_icon_play);
         }
     }
-    
+
     private void showError(String message) {
         if (message != null && !message.isEmpty()) {
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
@@ -267,19 +280,19 @@ public class MusicPlayerFragment extends Fragment {
             if (currentState != null) {
                 updatePlaybackState(currentState);
             }
-            
+
             // Get current music
             Music currentMusic = viewModel.getCurrentMusic().getValue();
             if (currentMusic != null) {
                 updateMusicInfo(currentMusic);
             }
-            
+
             // Get current progress and duration
             Integer progress = viewModel.getCurrentProgress().getValue();
             if (progress != null) {
                 updateProgress(progress);
             }
-            
+
             Integer duration = viewModel.getDuration().getValue();
             if (duration != null && duration > 0) {
                 updateDuration(duration);
@@ -293,11 +306,11 @@ public class MusicPlayerFragment extends Fragment {
         // Reset flags when fragment is stopped
         autoPlayOnLoad = true;
     }
-    
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        
+
         // Make sure bottom navigation is visible again when fragment is destroyed
         BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottom_navigation);
         if (bottomNavigationView != null) {
