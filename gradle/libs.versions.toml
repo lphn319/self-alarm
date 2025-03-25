@@ -14,6 +14,7 @@ recyclerview = "1.2.1"
 cardview = "1.0.0"
 gson = "2.8.7"
 securityCrypto = "1.0.0"
+navigationRuntime = "2.8.9"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +31,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
+androidx-navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "navigationRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

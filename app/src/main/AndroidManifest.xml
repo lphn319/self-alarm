@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <!-- Internet permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -11,7 +14,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <!-- Permissions for SMS -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-<uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -87,6 +90,14 @@
             android:exported="false">
         </activity>
 
+        <activity
+            android:name=".activities.AddEditEventFragment"
+            android:exported="false" />
+
+        <activity
+            android:name=".activities.EventDetailFragment"
+            android:exported="false" />
+
         <service
             android:name=".services.BlacklistService"
             android:enabled="true"
@@ -107,6 +118,10 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".services.ReminderService"
+            android:exported="false" />
 
         <receiver
             android:name=".receivers.SMSReceiver"
@@ -142,6 +157,10 @@
         </receiver>
 
         <receiver
+            android:name=".receivers.AlarmReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".receivers.HeadphoneReceiver"
             android:enabled="true"
             android:exported="true">
@@ -151,19 +170,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name=".receivers.MediaButtonReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <action android:name="ACTION_PLAY" />
-                <action android:name="ACTION_PAUSE" />
-                <action android:name="ACTION_TOGGLE_PLAYBACK" />
-                <action android:name="ACTION_NEXT" />
-                <action android:name="ACTION_PREVIOUS" />
-                <action android:name="ACTION_STOP" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

@@ -18,4 +18,18 @@
     <color name="battery_normal">#2ECC71</color> <!-- Xanh lá (an toàn) -->
     <color name="battery_low">#F39C12</color> <!-- Cam (cảnh báo) -->
     <color name="battery_critical">#E74C3C</color> <!-- Đỏ (nguy hiểm) -->
+
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="colorPrimary">#FF6200EE</color>
+    <color name="colorPrimaryDark">#FF3700B3</color>
+    <color name="colorAccent">#FF03DAC5</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorTextPrimary">#212121</color>
+    <color name="colorTextSecondary">#757575</color>
+    <color name="colorDivider">#DDDDDD</color>
+
 </resources>
