@@ -10,7 +10,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.activities.MainActivity;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.MainActivity;
 
 public class NotificationHelper {
     private static final String BATTERY_CHANNEL_ID = "battery_channel";

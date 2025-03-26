@@ -57,7 +57,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -68,19 +68,19 @@
 
 
         <service
-            android:name=".services.BlacklistService"
+            android:name=".controller.services.BlacklistService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
         <service
-            android:name=".services.MusicPlaybackService"
+            android:name=".controller.services.MusicPlaybackService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
 
         <receiver
-            android:name=".receivers.BootReceiver"
+            android:name=".controller.receivers.BootReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -89,11 +89,11 @@
         </receiver>
 
         <service
-            android:name=".services.ReminderService"
+            android:name=".controller.services.ReminderService"
             android:exported="false" />
 
         <receiver
-            android:name=".receivers.SMSReceiver"
+            android:name=".controller.receivers.SMSReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="1000">
@@ -102,7 +102,7 @@
         </receiver>
 
         <receiver
-            android:name=".receivers.CallReceiver"
+            android:name=".controller.receivers.CallReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -112,7 +112,7 @@
         </receiver>
 
         <receiver
-            android:name=".receivers.MediaButtonReceiver"
+            android:name=".controller.receivers.MediaButtonReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
@@ -126,11 +126,11 @@
         </receiver>
 
         <receiver
-            android:name=".receivers.AlarmReceiver"
+            android:name=".controller.receivers.AlarmReceiver"
             android:exported="false" />
 
         <receiver
-            android:name=".receivers.HeadphoneReceiver"
+            android:name=".controller.receivers.HeadphoneReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

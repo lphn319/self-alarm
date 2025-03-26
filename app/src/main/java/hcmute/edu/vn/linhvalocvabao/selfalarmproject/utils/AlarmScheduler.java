@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.Event;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.receivers.AlarmReceiver;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.receivers.AlarmReceiver;
 
 import java.util.Calendar;
 
