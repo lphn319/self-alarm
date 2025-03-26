@@ -10,8 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.receivers.CallReceiver;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.services.BlacklistService;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.receivers.CallReceiver;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.services.BlacklistService;
 
 public class CallStateManager {
     private static final String TAG = "CallStateManager";

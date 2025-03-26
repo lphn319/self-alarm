@@ -3,7 +3,6 @@ package hcmute.edu.vn.linhvalocvabao.selfalarmproject;
 import android.app.Application;
 
 import dagger.hilt.android.HiltAndroidApp;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.CryptoUtils;
 
 /**
  * Application class for Hilt dependency injection
