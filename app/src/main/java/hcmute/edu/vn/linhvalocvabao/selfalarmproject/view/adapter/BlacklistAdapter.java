@@ -1,4 +1,4 @@
-package hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter;
+package hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;

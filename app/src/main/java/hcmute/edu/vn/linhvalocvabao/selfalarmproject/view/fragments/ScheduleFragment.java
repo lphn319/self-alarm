@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.EventAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter.EventAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.db.DatabaseHelper;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.Event;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.BlacklistAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter.BlacklistAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.BlacklistContact;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.services.BlacklistService;
 

@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.CallsAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter.CallsAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.CallLogEntry;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.receivers.CallReceiver;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.CallStateManager;

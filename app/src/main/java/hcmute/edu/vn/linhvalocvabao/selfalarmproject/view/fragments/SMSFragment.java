@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
-import hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter.SMSAdapter;
+import hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter.SMSAdapter;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.models.SMS;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.controller.receivers.SMSReceiver;
 

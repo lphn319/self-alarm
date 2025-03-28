@@ -1,4 +1,4 @@
-package hcmute.edu.vn.linhvalocvabao.selfalarmproject.adapter;
+package hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
