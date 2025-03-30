@@ -1,6 +1,5 @@
 package hcmute.edu.vn.linhvalocvabao.selfalarmproject.view.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,9 +20,8 @@ import java.util.List;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.R;
 import hcmute.edu.vn.linhvalocvabao.selfalarmproject.data.model.Music;
 
-public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartViewHolder> {
+public class ChartAdapter extends ListAdapter<Music, ChartAdapter.ChartViewHolder> {
 
-    private List<Music> musicList;
     private final Context context;
     private final OnItemClickListener listener;
 
@@ -30,21 +30,32 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartViewHol
 
         void onMoreClick(Music music, int position);
     }
+    
+    // DiffUtil callback for efficient list updates
+    private static final DiffUtil.ItemCallback<Music> DIFF_CALLBACK = new DiffUtil.ItemCallback<Music>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Music oldItem, @NonNull Music newItem) {
+            // Compare unique identifiers
+            return oldItem.getId().equals(newItem.getId());
+        }
 
-    public ChartAdapter(List<Music> musicList, Context context, OnItemClickListener listener) {
-        this.musicList = musicList;
+        @Override
+        public boolean areContentsTheSame(@NonNull Music oldItem, @NonNull Music newItem) {
+            // Compare all relevant fields for UI updates
+            return oldItem.getTitle().equals(newItem.getTitle()) &&
+                   oldItem.getArtists().equals(newItem.getArtists()) &&
+                   oldItem.getThumbnail().equals(newItem.getThumbnail());
+        }
+    };
+
+    public ChartAdapter(Context context, OnItemClickListener listener) {
+        super(DIFF_CALLBACK);
         this.context = context;
         this.listener = listener;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateData(List<Music> newList) {
-        this.musicList = newList;
-        notifyDataSetChanged();
-    }
-
     public List<Music> getMusicList() {
-        return musicList;
+        return getCurrentList();
     }
 
     @NonNull
@@ -56,13 +67,8 @@ public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ChartViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ChartViewHolder holder, int position) {
-        Music music = musicList.get(position);
+        Music music = getItem(position);
         holder.bind(music, position, listener);
-    }
-
-    @Override
-    public int getItemCount() {
-        return musicList != null ? musicList.size() : 0;
     }
 
     public static class ChartViewHolder extends RecyclerView.ViewHolder {
