@@ -40,8 +40,7 @@ public class MusicChartFragment extends Fragment {
     
     @Inject
     NetworkUtils networkUtils;
-    
-    private RecyclerView recyclerViewCharts;
+
     private ProgressBar progressBar;
     private TextView tvEmptyState;
     private CardView cardEmptyState;
@@ -68,7 +67,7 @@ public class MusicChartFragment extends Fragment {
         musicPlayerViewModel = new ViewModelProvider(requireActivity()).get(MusicPlayerViewModel.class);
         
         // Initialize views
-        recyclerViewCharts = view.findViewById(R.id.recyclerViewCharts);
+        RecyclerView recyclerViewCharts = view.findViewById(R.id.recyclerViewCharts);
         progressBar = view.findViewById(R.id.progressBar);
         tvEmptyState = view.findViewById(R.id.tvEmptyState);
         cardEmptyState = view.findViewById(R.id.cardEmptyState);
@@ -76,7 +75,7 @@ public class MusicChartFragment extends Fragment {
         
         // Set up RecyclerView
         recyclerViewCharts.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChartAdapter(new ArrayList<>(), requireContext(), new ChartAdapter.OnItemClickListener() {
+        adapter = new ChartAdapter(requireContext(), new ChartAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Music music, int position) {
                 // Play the selected music
@@ -129,13 +128,13 @@ public class MusicChartFragment extends Fragment {
             showLoadingState(false);
             
             if (musicList != null && !musicList.isEmpty()) {
-                // Display data
-                adapter.updateData(musicList);
+                // Display data using the ListAdapter's submitList method
+                adapter.submitList(musicList);
                 showEmptyState(false, null);
             } else {
                 // Show empty state
                 showEmptyState(true, "No songs found");
-                adapter.updateData(new ArrayList<>());
+                adapter.submitList(new ArrayList<>());
             }
         });
     }
@@ -164,7 +163,7 @@ public class MusicChartFragment extends Fragment {
     }
     
     private void playMusic(Music music) {
-        if (music != null && music.getId() != null) {
+        if (music != null) {
             try {
                 // Prepare the music without auto-playing
                 musicPlayerViewModel.prepareMusic(music);
@@ -181,7 +180,7 @@ public class MusicChartFragment extends Fragment {
     }
     
     private void playAllFromPosition(int position) {
-        List<Music> songs = adapter.getMusicList();  // This will now work with our added method
+        List<Music> songs = adapter.getMusicList();  // Using our ListAdapter's getCurrentList method
         if (songs != null && !songs.isEmpty() && position >= 0 && position < songs.size()) {
             musicPlayerViewModel.playPlaylist(songs, position);
         }

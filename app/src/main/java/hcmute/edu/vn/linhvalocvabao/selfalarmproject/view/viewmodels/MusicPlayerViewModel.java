@@ -29,37 +29,37 @@ import hcmute.edu.vn.linhvalocvabao.selfalarmproject.utils.PreferenceManager;
 
 @HiltViewModel
 public class MusicPlayerViewModel extends AndroidViewModel {
-    
+
     private static final String TAG = "MusicPlayerViewModel";
-    
+
     @SuppressLint("StaticFieldLeak")
     private MusicPlaybackService musicService;
     private boolean serviceBound = false;
-    
+
     private final MediatorLiveData<Music> currentMusic = new MediatorLiveData<>();
     private final MutableLiveData<Integer> currentProgress = new MutableLiveData<>(0);
     private final MutableLiveData<Integer> duration = new MutableLiveData<>(0);
-    private final MutableLiveData<PlaybackState> playbackState = 
+    private final MutableLiveData<PlaybackState> playbackState =
             new MutableLiveData<>(PlaybackState.IDLE);
     private final MutableLiveData<List<Music>> playlist = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    
+
     private final ZingMp3Api zingMp3Api;
     private final PreferenceManager preferenceManager;
-    
+
     @Inject
-    public MusicPlayerViewModel(@NonNull Application application, 
-                               ZingMp3Api zingMp3Api,
-                               PreferenceManager preferenceManager) {
+    public MusicPlayerViewModel(@NonNull Application application,
+                                ZingMp3Api zingMp3Api,
+                                PreferenceManager preferenceManager) {
         super(application);
         this.zingMp3Api = zingMp3Api;
         this.preferenceManager = preferenceManager;
-        
+
         // Bind to the music service
         bindMusicService();
     }
-    
+
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -67,10 +67,10 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             musicService = binder.getService();
             serviceBound = true;
             Log.d(TAG, "Service connected");
-            
+
             // Set up observers for the service
             setupServiceObservers();
-            
+
             // Restore last session if needed
             if (currentMusic.getValue() == null) {
                 restoreLastSession();
@@ -83,13 +83,13 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             Log.d(TAG, "Service disconnected");
         }
     };
-    
+
     private void bindMusicService() {
         Intent intent = new Intent(getApplication(), MusicPlaybackService.class);
         getApplication().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         getApplication().startService(intent);
     }
-    
+
     private void setupServiceObservers() {
         if (musicService != null) {
             // Observe current music
@@ -99,35 +99,35 @@ public class MusicPlayerViewModel extends AndroidViewModel {
                     duration.setValue(musicService.getDuration());
                 }
             });
-            
+
             // Observe playback state
             musicService.getPlaybackState().observeForever(state -> {
                 playbackState.setValue(state);
-                if (state == PlaybackState.PLAYING || 
-                    state == PlaybackState.PAUSED) {
+                if (state == PlaybackState.PLAYING ||
+                        state == PlaybackState.PAUSED) {
                     duration.setValue(musicService.getDuration());
                 }
             });
-            
+
             // Observe playback progress
             musicService.getPlaybackProgress().observeForever(currentProgress::setValue);
-            
+
             // Initialize playlist
             playlist.setValue(musicService.getPlaylist());
         }
     }
-    
+
     private void restoreLastSession() {
         String lastSongId = preferenceManager.getLastPlayedSongId();
         List<String> lastPlaylist = preferenceManager.getLastPlaylist();
-        
+
         if (lastPlaylist != null && !lastPlaylist.isEmpty()) {
             isLoading.setValue(true);
-            
+
             // Fetch songs from IDs
             fetchSongsFromIds(lastPlaylist, songs -> {
                 isLoading.setValue(false);
-                
+
                 if (songs != null && !songs.isEmpty()) {
                     // Find the index of the last played song
                     int startPosition = 0;
@@ -139,7 +139,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
                             }
                         }
                     }
-                    
+
                     playlist.setValue(songs);
                     playPlaylist(songs, startPosition);
                 } else {
@@ -148,29 +148,29 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             });
         }
     }
-    
+
     private interface SongsCallback {
         void onSongsLoaded(List<Music> songs);
     }
-    
+
     private void fetchSongsFromIds(List<String> songIds, SongsCallback callback) {
         List<Music> result = new ArrayList<>();
         if (songIds.isEmpty()) {
             callback.onSongsLoaded(result);
             return;
         }
-        
+
         // This is a simplified implementation. In a real app, you would batch these requests
         // or implement a repository method to get multiple songs at once
         fetchNextSong(songIds, 0, result, callback);
     }
-    
+
     private void fetchNextSong(List<String> songIds, int index, List<Music> result, SongsCallback callback) {
         if (index >= songIds.size()) {
             callback.onSongsLoaded(result);
             return;
         }
-        
+
         String id = songIds.get(index);
         zingMp3Api.getSongInfo(id).observeForever(song -> {
             if (song != null) {
@@ -179,22 +179,22 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             fetchNextSong(songIds, index + 1, result, callback);
         });
     }
-    
+
     // Methods for controlling playback
-    
+
     public void prepareMusic(Music music) {
         if (musicService == null) {
             Log.e(TAG, "Music service is not bound");
             errorMessage.setValue("Music service is not available");
             return;
         }
-        
-        if (music == null || music.getId() == null) {
+
+        if (music == null) {
             Log.e(TAG, "Invalid music object");
             errorMessage.setValue("Cannot prepare this song");
             return;
         }
-        
+
         Log.d(TAG, "Preparing music: " + music.getTitle());
         List<Music> currentPlaylist = playlist.getValue();
         if (currentPlaylist != null) {
@@ -206,11 +206,11 @@ public class MusicPlayerViewModel extends AndroidViewModel {
                     break;
                 }
             }
-            
+
             if (index >= 0) {
                 // Song exists in playlist, prepare that position
                 Log.d(TAG, "Preparing existing song from position: " + index);
-                musicService.preparePosition(index);
+                musicService.preparePosition(index == 0 ? 0 : index - 1);
             } else {
                 // Create a new playlist with just this song
                 Log.d(TAG, "Creating new playlist with single song");
@@ -228,20 +228,20 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             playlist.setValue(newPlaylist);
         }
     }
-    
+
     public void playMusic(Music music) {
         if (musicService == null) {
             Log.e(TAG, "Music service is not bound");
             errorMessage.setValue("Music service is not available");
             return;
         }
-        
+
         if (music == null) {
             Log.e(TAG, "Invalid music object");
             errorMessage.setValue("Cannot play this song");
             return;
         }
-        
+
         Log.d(TAG, "Playing music: " + music.getTitle());
         List<Music> currentPlaylist = playlist.getValue();
         if (currentPlaylist != null) {
@@ -253,7 +253,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
                     break;
                 }
             }
-            
+
             if (index >= 0) {
                 // Song exists in playlist, play from that position
                 Log.d(TAG, "Playing existing song from position: " + index);
@@ -275,7 +275,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             playlist.setValue(newPlaylist);
         }
     }
-    
+
     public void playPlaylist(List<Music> songs, int startPosition) {
         if (musicService != null && songs != null && !songs.isEmpty()) {
             musicService.setPlaylist(songs, startPosition);
@@ -284,7 +284,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             errorMessage.setValue("Cannot play playlist: Service not available or playlist empty");
         }
     }
-    
+
     public void play() {
         if (musicService != null) {
             try {
@@ -297,13 +297,13 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             errorMessage.setValue("Music service not available");
         }
     }
-    
+
     public void pause() {
         if (musicService != null) {
             musicService.pause();
         }
     }
-    
+
     public void playPause() {
         if (musicService != null) {
             if (playbackState.getValue() == PlaybackState.PLAYING) {
@@ -313,72 +313,72 @@ public class MusicPlayerViewModel extends AndroidViewModel {
             }
         }
     }
-    
+
     public void skipToNext() {
         if (musicService != null) {
             musicService.playNext();
         }
     }
-    
+
     public void skipToPrevious() {
         if (musicService != null) {
             musicService.playPrevious();
         }
     }
-    
+
     public void seekTo(int position) {
         if (musicService != null) {
             musicService.seekTo(position);
         }
     }
-    
+
     public void stop() {
         if (musicService != null) {
             musicService.stop();
         }
     }
-    
+
     @Override
     protected void onCleared() {
         super.onCleared();
-        
+
         // Unbind from service to avoid memory leaks
         if (serviceBound) {
             getApplication().unbindService(serviceConnection);
             serviceBound = false;
         }
     }
-    
+
     // Getters for LiveData objects
-    
+
     public LiveData<Music> getCurrentMusic() {
         return currentMusic;
     }
-    
+
     public LiveData<Integer> getCurrentProgress() {
         return currentProgress;
     }
-    
+
     public LiveData<Integer> getDuration() {
         return duration;
     }
-    
+
     public LiveData<PlaybackState> getPlaybackState() {
         return playbackState;
     }
-    
+
     public LiveData<List<Music>> getPlaylist() {
         return playlist;
     }
-    
+
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
     }
-    
+
     public LiveData<String> getErrorMessage() {
         return errorMessage;
     }
-    
+
     public boolean isPlaying() {
         return playbackState.getValue() == PlaybackState.PLAYING;
     }
