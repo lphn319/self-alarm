@@ -197,31 +197,33 @@ public class MusicPlayerViewModel extends AndroidViewModel {
 
         Log.d(TAG, "Preparing music: " + music.getTitle());
         List<Music> currentPlaylist = playlist.getValue();
-        if (currentPlaylist != null) {
-            int index = -1;
-            // Check if the song is already in the playlist
-            for (int i = 0; i < currentPlaylist.size(); i++) {
-                if (currentPlaylist.get(i).getId().equals(music.getId())) {
-                    index = i;
-                    break;
-                }
-            }
+        if (currentPlaylist == null) {
 
-            if (index >= 0) {
-                // Song exists in playlist, prepare that position
-                Log.d(TAG, "Preparing existing song from position: " + index);
-                musicService.preparePosition(index == 0 ? 0 : index - 1);
-            } else {
-                // Create a new playlist with just this song
-                Log.d(TAG, "Creating new playlist with single song");
-                List<Music> newPlaylist = new ArrayList<>();
-                newPlaylist.add(music);
-                musicService.setPlaylist(newPlaylist, 0);
-                playlist.setValue(newPlaylist);
-            }
-        } else {
             // No current playlist, create one
             Log.d(TAG, "Creating first playlist");
+            List<Music> newPlaylist = new ArrayList<>();
+            newPlaylist.add(music);
+            musicService.setPlaylist(newPlaylist, 0);
+            playlist.setValue(newPlaylist);
+            return;
+        }
+
+        int index = -1;
+        // Check if the song is already in the playlist
+        for (int i = 0; i < currentPlaylist.size(); i++) {
+            if (currentPlaylist.get(i).getId().equals(music.getId())) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index >= 0) {
+            // Song exists in playlist, prepare that position
+            Log.d(TAG, "Preparing existing song from position: " + index);
+            musicService.preparePosition(index == 0 ? 0 : index - 1);
+        } else {
+            // Create a new playlist with just this song
+            Log.d(TAG, "Creating new playlist with single song");
             List<Music> newPlaylist = new ArrayList<>();
             newPlaylist.add(music);
             musicService.setPlaylist(newPlaylist, 0);
@@ -377,6 +379,33 @@ public class MusicPlayerViewModel extends AndroidViewModel {
 
     public LiveData<String> getErrorMessage() {
         return errorMessage;
+    }
+
+    public void setPlaylist(List<Music> songs) {
+        if (musicService != null) {
+            playlist.setValue(songs);
+            int startPosition = findSongIndexInPlaylist(currentMusic.getValue());
+            startPosition = Math.max(0, startPosition);
+            musicService.setPlaylist(songs, startPosition);
+        } else {
+            errorMessage.setValue("Music service not available");
+        }
+    }
+
+    private int findSongIndexInPlaylist(Music music) {
+        if (music == null) {
+            return -1;
+        }
+
+        List<Music> currentPlaylist = playlist.getValue();
+        if (currentPlaylist != null) {
+            for (int i = 0; i < currentPlaylist.size(); i++) {
+                if (currentPlaylist.get(i).getId().equals(music.getId())) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     public boolean isPlaying() {
