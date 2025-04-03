@@ -2,37 +2,50 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme -->
     <style name="Base.Theme.SelfAlarmProject" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Màu sắc chính -->
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/anime_primary_blue</item>
         <item name="colorPrimaryVariant">@color/anime_primary_dark_blue</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <!-- Màu phụ -->
+        <!-- Secondary colors -->
         <item name="colorSecondary">@color/anime_accent_pink</item>
         <item name="colorSecondaryVariant">@color/anime_accent_light_pink</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <!-- Màu nền và văn bản -->
-        <item name="colorSurface">@color/anime_background_soft_gray</item>
+        <!-- Background colors and text -->
+        <item name="android:colorBackground">@color/anime_background_soft_gray</item>
+        <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/anime_text_dark</item>
         <item name="android:textColorPrimary">@color/anime_text_dark</item>
         <item name="android:textColorSecondary">@color/anime_text_light</item>
 
-        <!-- Màu thanh trạng thái -->
+        <!-- Status bar styling -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
 
-        <!-- Hiệu ứng chạm -->
+        <!-- Touch effects -->
         <item name="colorControlHighlight">@color/anime_accent_light_pink</item>
         <item name="android:colorControlHighlight">@color/anime_accent_light_pink</item>
 
-        <!-- Các thành phần giao diện -->
+        <!-- UI components styling -->
         <item name="materialCardViewStyle">@style/Widget.SelfAlarm.CardView</item>
         <item name="materialButtonStyle">@style/Widget.SelfAlarm.Button</item>
         <item name="switchStyle">@style/Widget.SelfAlarm.Switch</item>
+        <item name="toolbarStyle">@style/Widget.SelfAlarm.Toolbar</item>
+        <item name="bottomNavigationStyle">@style/Widget.SelfAlarm.BottomNavigationView</item>
+        <item name="sliderStyle">@style/Widget.SelfAlarm.Slider</item>
+        <item name="checkboxStyle">@style/Widget.SelfAlarm.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.SelfAlarm.RadioButton</item>
+        <item name="tabStyle">@style/Widget.SelfAlarm.TabLayout</item>
+        <item name="textInputStyle">@style/Widget.SelfAlarm.TextInputLayout.OutlinedBox</item>
+        <item name="floatingActionButtonStyle">@style/Widget.SelfAlarm.FloatingActionButton</item>
+        
+        <!-- Dialog and alert theming -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.SelfAlarm.MaterialAlertDialog</item>
     </style>
 
-    <!-- Kiểu chữ -->
+    <!-- Text Appearance styles -->
     <style name="TextAppearance.SelfAlarm.Headline1" parent="TextAppearance.MaterialComponents.Headline1">
         <item name="fontFamily">sans-serif-medium</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -51,33 +64,13 @@
         <item name="android:textColor">@color/anime_text_dark</item>
     </style>
 
-    <!-- Kiểu CardView -->
-    <style name="Widget.SelfAlarm.CardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardElevation">6dp</item>
-        <item name="cardCornerRadius">16dp</item>
-        <item name="contentPadding">16dp</item>
-        <item name="cardBackgroundColor">@color/white</item>
-        <item name="strokeColor">@color/anime_accent_pink</item>
-        <item name="strokeWidth">2dp</item>
+    <!-- Main theme -->
+    <style name="Theme.SelfAlarmProject" parent="Base.Theme.SelfAlarmProject">
+        <!-- Animations for activity transitions -->
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowEnterTransition">@android:transition/slide_right</item>
+        <item name="android:windowExitTransition">@android:transition/slide_left</item>
     </style>
-
-    <!-- Kiểu Button -->
-    <style name="Widget.SelfAlarm.Button" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">@color/white</item>
-        <item name="cornerRadius">12dp</item>
-        <item name="backgroundTint">@color/anime_primary_blue</item>
-        <item name="android:textStyle">bold</item>
-        <item name="rippleColor">@color/anime_accent_light_pink</item>
-    </style>
-
-    <!-- Kiểu Switch -->
-    <style name="Widget.SelfAlarm.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="trackTint">@color/anime_accent_light_pink</item>
-        <item name="thumbTint">@color/anime_primary_blue</item>
-    </style>
-
-    <!-- Theme chính -->
-    <style name="Theme.SelfAlarmProject" parent="Base.Theme.SelfAlarmProject" />
 
     <style name="TextAppearance.App.Toolbar.Title" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="fontFamily">sans-serif-medium</item>
@@ -98,5 +91,4 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
 </resources>

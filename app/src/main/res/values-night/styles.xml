@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark CardView style -->
+    <style name="Widget.SelfAlarm.Dark.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="contentPadding">16dp</item>
+        <item name="cardBackgroundColor">@color/dark_card_background</item>
+        <item name="strokeColor">@color/dark_anime_accent_pink</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/dark_anime_accent_light_pink</item>
+    </style>
+
+    <!-- Dark Button style -->
+    <style name="Widget.SelfAlarm.Dark.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/dark_surface_highlight</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/dark_anime_primary_blue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">@color/dark_anime_accent_light_pink</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <!-- Dark Switch style -->
+    <style name="Widget.SelfAlarm.Dark.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="trackTint">@color/dark_anime_accent_light_pink</item>
+        <item name="thumbTint">@color/dark_anime_primary_blue</item>
+    </style>
+    
+    <!-- Dark mode toolbar style -->
+    <style name="Widget.SelfAlarm.Toolbar.Dark" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/dark_surface</item>
+        <item name="titleTextAppearance">@style/TextAppearance.SelfAlarm.Toolbar.Title.Dark</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.SelfAlarm.Toolbar.Subtitle.Dark</item>
+        <item name="titleTextColor">@color/dark_anime_text_light</item>
+        <item name="colorControlNormal">@color/dark_anime_text_light</item>
+        <item name="popupTheme">@style/ThemeOverlay.SelfAlarm.Toolbar.Popup.Dark</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    
+    <!-- Dark mode text styles for toolbars -->
+    <style name="TextAppearance.SelfAlarm.Toolbar.Title.Dark" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Toolbar.Subtitle.Dark" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/dark_anime_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Dark mode popup theme for toolbar menu -->
+    <style name="ThemeOverlay.SelfAlarm.Toolbar.Popup.Dark" parent="ThemeOverlay.MaterialComponents.Dark">
+        <item name="android:colorBackground">@color/dark_dialog_background</item>
+        <item name="colorSurface">@color/dark_dialog_background</item>
+        <item name="colorOnSurface">@color/dark_anime_text_light</item>
+    </style>
+    
+    <!-- Dark mode FloatingActionButton style -->
+    <style name="Widget.SelfAlarm.FloatingActionButton.Dark" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/dark_anime_accent_pink</item>
+        <item name="tint">@color/dark_surface_highlight</item>
+        <item name="borderWidth">0dp</item>
+        <item name="rippleColor">@color/dark_anime_accent_light_pink</item>
+        <item name="elevation">6dp</item>
+    </style>
+    
+    <!-- Dark mode BottomNavigationView style -->
+    <style name="Widget.SelfAlarm.BottomNavigationView.Dark" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/dark_surface</item>
+        <item name="itemIconTint">@color/dark_anime_primary_blue</item>
+        <item name="itemTextColor">@color/dark_anime_text_light</item>
+        <item name="itemRippleColor">@color/dark_anime_accent_light_pink</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+    
+    <!-- Dark mode slider style -->
+    <style name="Widget.SelfAlarm.Slider.Dark" parent="Widget.MaterialComponents.Slider">
+        <item name="labelStyle">@style/Widget.SelfAlarm.Tooltip.Dark</item>
+        <item name="thumbColor">@color/dark_anime_primary_blue</item>
+        <item name="trackColorActive">@color/dark_anime_accent_pink</item>
+        <item name="trackColorInactive">@color/dark_anime_text_disabled</item>
+        <item name="haloColor">@color/dark_anime_primary_blue</item>
+    </style>
+    
+    <!-- Dark mode tooltip style -->
+    <style name="Widget.SelfAlarm.Tooltip.Dark" parent="Widget.MaterialComponents.Tooltip">
+        <item name="android:textAppearance">@style/TextAppearance.SelfAlarm.Tooltip.Dark</item>
+        <item name="backgroundTint">@color/dark_dialog_background</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Tooltip.Dark" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+    </style>
+    
+    <!-- Dark mode CheckBox style -->
+    <style name="Widget.SelfAlarm.CheckBox.Dark" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/dark_anime_primary_blue</item>
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+    </style>
+    
+    <!-- Dark mode RadioButton style -->
+    <style name="Widget.SelfAlarm.RadioButton.Dark" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/dark_anime_primary_blue</item>
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+    </style>
+    
+    <!-- Dark mode TabLayout style -->
+    <style name="Widget.SelfAlarm.TabLayout.Dark" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@color/dark_surface</item>
+        <item name="tabTextColor">@color/dark_anime_text_secondary</item>
+        <item name="tabSelectedTextColor">@color/dark_anime_primary_blue</item>
+        <item name="tabIndicatorColor">@color/dark_anime_accent_pink</item>
+        <item name="tabRippleColor">@color/dark_anime_accent_light_pink</item>
+        <item name="tabTextAppearance">@style/TextAppearance.SelfAlarm.Tab.Dark</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Tab.Dark" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    
+    <!-- Dark mode EditText style -->
+    <style name="Widget.SelfAlarm.TextInputLayout.OutlinedBox.Dark" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/dark_anime_primary_blue</item>
+        <item name="android:textColorHint">@color/dark_anime_text_secondary</item>
+        <item name="hintTextColor">@color/dark_anime_text_light</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="endIconTint">@color/dark_anime_primary_blue</item>
+        <item name="startIconTint">@color/dark_anime_primary_blue</item>
+    </style>
+    
+    <!-- Dark mode TextInputEditText style -->
+    <style name="Widget.SelfAlarm.TextInputEditText.Dark" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+        <item name="android:textColorHint">@color/dark_anime_text_secondary</item>
+    </style>
+    
+    <!-- Dark mode list item style -->
+    <style name="TextAppearance.SelfAlarm.ListItem.Title.Dark" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/dark_anime_text_light</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.ListItem.Subtitle.Dark" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/dark_anime_text_secondary</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Dark Alert Dialog style -->
+    <style name="ThemeOverlay.SelfAlarm.Dark.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/dark_dialog_background</item>
+        <item name="colorOnSurface">@color/dark_anime_text_light</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.SelfAlarm.Dark.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.SelfAlarm.Dark.TextButton</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.SelfAlarm.Dialog</item>
+    </style>
+
+    <!-- Dark Text Button style -->
+    <style name="Widget.SelfAlarm.Dark.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/dark_anime_accent_pink</item>
+        <item name="rippleColor">@color/dark_anime_accent_light_pink</item>
+    </style>
+
+    <!-- Dark Bottom Sheet Dialog style -->
+    <style name="ThemeOverlay.SelfAlarm.Dark.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.SelfAlarm.Dark.BottomSheet</item>
+    </style>
+
+    <!-- Dark Bottom Sheet style -->
+    <style name="Widget.SelfAlarm.Dark.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="backgroundTint">@color/dark_surface</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.SelfAlarm.BottomSheet</item>
+    </style>
+    
+    <!-- Shape Appearance Overlays -->
+    <style name="ShapeAppearanceOverlay.SelfAlarm.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    
+    <style name="ShapeAppearanceOverlay.SelfAlarm.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+</resources>

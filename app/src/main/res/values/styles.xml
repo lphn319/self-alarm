@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Light theme specific styles for components -->
+    
+    <!-- Light mode toolbar style -->
+    <style name="Widget.SelfAlarm.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/white</item>
+        <item name="titleTextAppearance">@style/TextAppearance.SelfAlarm.Toolbar.Title</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.SelfAlarm.Toolbar.Subtitle</item>
+        <item name="titleTextColor">@color/anime_text_dark</item>
+        <item name="colorControlNormal">@color/anime_primary_blue</item>
+        <item name="popupTheme">@style/ThemeOverlay.SelfAlarm.Toolbar.Popup</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+    
+    <!-- Light mode text styles for toolbars -->
+    <style name="TextAppearance.SelfAlarm.Toolbar.Title" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/anime_text_dark</item>
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Toolbar.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textColor">@color/anime_text_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Light mode popup theme for toolbar menu -->
+    <style name="ThemeOverlay.SelfAlarm.Toolbar.Popup" parent="ThemeOverlay.MaterialComponents.Light">
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/anime_text_dark</item>
+    </style>
+    
+    <!-- Light mode FloatingActionButton style -->
+    <style name="Widget.SelfAlarm.FloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@color/anime_primary_blue</item>
+        <item name="tint">@color/white</item>
+        <item name="borderWidth">0dp</item>
+        <item name="rippleColor">@color/anime_accent_light_pink</item>
+        <item name="elevation">6dp</item>
+    </style>
+    
+    <!-- Light mode BottomNavigationView style -->
+    <style name="Widget.SelfAlarm.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/white</item>
+        <item name="itemIconTint">@color/anime_primary_blue</item>
+        <item name="itemTextColor">@color/anime_text_dark</item>
+        <item name="itemRippleColor">@color/anime_accent_light_pink</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+    
+    <!-- Light mode slider style -->
+    <style name="Widget.SelfAlarm.Slider" parent="Widget.MaterialComponents.Slider">
+        <item name="labelStyle">@style/Widget.SelfAlarm.Tooltip</item>
+        <item name="thumbColor">@color/anime_primary_blue</item>
+        <item name="trackColorActive">@color/anime_accent_pink</item>
+        <item name="trackColorInactive">@color/anime_text_light</item>
+        <item name="haloColor">@color/anime_primary_blue</item>
+    </style>
+    
+    <!-- Light mode tooltip style -->
+    <style name="Widget.SelfAlarm.Tooltip" parent="Widget.MaterialComponents.Tooltip">
+        <item name="android:textAppearance">@style/TextAppearance.SelfAlarm.Tooltip</item>
+        <item name="backgroundTint">@color/anime_primary_dark_blue</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Tooltip" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    
+    <!-- Light mode CheckBox style -->
+    <style name="Widget.SelfAlarm.CheckBox" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/anime_primary_blue</item>
+        <item name="android:textColor">@color/anime_text_dark</item>
+    </style>
+    
+    <!-- Light mode RadioButton style -->
+    <style name="Widget.SelfAlarm.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/anime_primary_blue</item>
+        <item name="android:textColor">@color/anime_text_dark</item>
+    </style>
+    
+    <!-- Light mode TabLayout style -->
+    <style name="Widget.SelfAlarm.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@color/white</item>
+        <item name="tabTextColor">@color/anime_text_light</item>
+        <item name="tabSelectedTextColor">@color/anime_primary_blue</item>
+        <item name="tabIndicatorColor">@color/anime_accent_pink</item>
+        <item name="tabRippleColor">@color/anime_accent_light_pink</item>
+        <item name="tabTextAppearance">@style/TextAppearance.SelfAlarm.Tab</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.Tab" parent="TextAppearance.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    
+    <!-- Light mode EditText style -->
+    <style name="Widget.SelfAlarm.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/anime_primary_blue</item>
+        <item name="android:textColorHint">@color/anime_text_light</item>
+        <item name="hintTextColor">@color/anime_primary_blue</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="endIconTint">@color/anime_primary_blue</item>
+        <item name="startIconTint">@color/anime_primary_blue</item>
+    </style>
+    
+    <!-- Light mode TextInputEditText style -->
+    <style name="Widget.SelfAlarm.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/anime_text_dark</item>
+        <item name="android:textColorHint">@color/anime_text_light</item>
+    </style>
+    
+    <!-- Light mode CardView style -->
+    <style name="Widget.SelfAlarm.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="contentPadding">16dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="strokeColor">@color/anime_accent_light_pink</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/anime_accent_light_pink</item>
+    </style>
+    
+    <!-- Light mode Button style -->
+    <style name="Widget.SelfAlarm.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/anime_primary_blue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">@color/anime_accent_light_pink</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+    
+    <!-- Light mode list item style -->
+    <style name="TextAppearance.SelfAlarm.ListItem.Title" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/anime_text_dark</item>
+        <item name="android:textSize">16sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    
+    <style name="TextAppearance.SelfAlarm.ListItem.Subtitle" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/anime_text_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    
+    <!-- Light mode Switch style -->
+    <style name="Widget.SelfAlarm.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="trackTint">@color/anime_accent_light_pink</item>
+        <item name="thumbTint">@color/anime_primary_blue</item>
+    </style>
+    
+    <!-- Light Text Button style -->
+    <style name="Widget.SelfAlarm.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/anime_primary_blue</item>
+        <item name="rippleColor">@color/anime_accent_light_pink</item>
+    </style>
+    
+    <!-- Light Alert Dialog style -->
+    <style name="ThemeOverlay.SelfAlarm.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/anime_text_dark</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.SelfAlarm.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.SelfAlarm.TextButton</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.SelfAlarm.Dialog</item>
+    </style>
+    
+    <!-- Shape Appearance Overlays -->
+    <style name="ShapeAppearanceOverlay.SelfAlarm.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    
+    <style name="ShapeAppearanceOverlay.SelfAlarm.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+</resources>
