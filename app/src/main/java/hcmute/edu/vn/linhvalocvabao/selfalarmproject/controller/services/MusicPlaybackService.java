@@ -23,6 +23,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.lifecycle.LiveData;
@@ -67,6 +68,7 @@ public class MusicPlaybackService extends Service implements
     private final MutableLiveData<Integer> playbackProgress = new MutableLiveData<>();
     private final MutableLiveData<PlaybackState> playbackState = new MutableLiveData<>(PlaybackState.IDLE);
     private final MutableLiveData<Music> currentMusic = new MutableLiveData<>();
+    private final MutableLiveData<Integer> duration = new MutableLiveData<>(0);
 
     private NotificationManager notificationManager;
     private MediaSessionCompat mediaSession;
@@ -96,6 +98,17 @@ public class MusicPlaybackService extends Service implements
     }
 
     private void initMediaPlayer() {
+        if (mediaPlayer != null) {
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.release();
+            } catch (Exception e) {
+                Log.e(TAG, "Error releasing existing MediaPlayer", e);
+            }
+        }
+        
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
@@ -117,15 +130,13 @@ public class MusicPlaybackService extends Service implements
 
     private void initAudioManager() {
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                    .setOnAudioFocusChangeListener(this)
-                    .setAudioAttributes(new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .build())
-                    .build();
-        }
+        audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setOnAudioFocusChangeListener(this)
+                .setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build())
+                .build();
     }
 
     private void initProgressUpdater() {
@@ -143,20 +154,18 @@ public class MusicPlaybackService extends Service implements
     private void createNotificationChannel() {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Music Playback",
-                    NotificationManager.IMPORTANCE_LOW
-            );
-            channel.setDescription("Controls for the music player");
-            channel.enableVibration(false);
-            channel.setSound(null, null);
-            channel.setShowBadge(true);
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                "Music Playback",
+                NotificationManager.IMPORTANCE_LOW
+        );
+        channel.setDescription("Controls for the music player");
+        channel.enableVibration(false);
+        channel.setSound(null, null);
+        channel.setShowBadge(true);
 
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
+        if (notificationManager != null) {
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
@@ -192,7 +201,6 @@ public class MusicPlaybackService extends Service implements
                     stop();
                     break;
                 case Intent.ACTION_MEDIA_BUTTON:
-                    // Just pass this along to our MediaButtonReceiver
                     MediaButtonReceiver.handleIntent(mediaSession, intent);
                     break;
             }
@@ -205,6 +213,17 @@ public class MusicPlaybackService extends Service implements
         Log.d(TAG, "MediaPlayer prepared");
         isPreparing = false;
         playbackState.setValue(PlaybackState.PAUSED);
+        
+        if (mp != null && mp.getDuration() > 0) {
+            try {
+                int mediaDuration = mp.getDuration();
+                duration.setValue(mediaDuration);
+                Log.d(TAG, "Media duration set: " + mediaDuration);
+            } catch (Exception e) {
+                Log.e(TAG, "Error getting duration", e);
+            }
+        }
+        
         updatePlaybackState();
         updateMetadata();
         updateNotification();
@@ -217,11 +236,9 @@ public class MusicPlaybackService extends Service implements
         updatePlaybackState();
         updateNotification();
 
-        // Play next song if available
         if (currentPosition < playlist.size() - 1) {
             playNext();
         } else {
-            // Save last playback state
             savePlaybackState();
             stopForeground(true);
         }
@@ -233,9 +250,10 @@ public class MusicPlaybackService extends Service implements
         playbackState.setValue(PlaybackState.ERROR);
         isPreparing = false;
 
-        // Reset player
-        mediaPlayer.reset();
-        return false;
+        resetMediaPlayerSafely();
+        handler.removeCallbacks(progressUpdater);
+        
+        return true;
     }
 
     @Override
@@ -263,22 +281,12 @@ public class MusicPlaybackService extends Service implements
 
     private boolean requestAudioFocus() {
         int result;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            result = audioManager.requestAudioFocus(audioFocusRequest);
-        } else {
-            result = audioManager.requestAudioFocus(this,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN);
-        }
+        result = audioManager.requestAudioFocus(audioFocusRequest);
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
     private void abandonAudioFocus() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            audioManager.abandonAudioFocusRequest(audioFocusRequest);
-        } else {
-            audioManager.abandonAudioFocus(this);
-        }
+        audioManager.abandonAudioFocusRequest(audioFocusRequest);
     }
 
     public void setPlaylist(List<Music> newPlaylist, int startPosition) {
@@ -293,7 +301,6 @@ public class MusicPlaybackService extends Service implements
             playFromPosition(0);
         }
 
-        // Save playlist for later resumption
         List<String> songIds = new ArrayList<>();
         for (Music music : playlist) {
             songIds.add(music.getId());
@@ -310,39 +317,53 @@ public class MusicPlaybackService extends Service implements
 
         currentPosition = position;
         Music song = playlist.get(position);
+
         currentMusic.setValue(song);
 
-        // Reset player and prepare new song
         try {
-            mediaPlayer.reset();
+            resetMediaPlayerSafely();
             isPreparing = true;
             playbackState.setValue(PlaybackState.PREPARING);
 
             Log.d(TAG, "Getting stream URL for song: " + song.getTitle());
 
-            // Get streaming URL and play
             zingMp3Api.getSongStreamUrl(song.getId()).observeForever(url -> {
+                if (!isPreparing) {
+                    Log.d(TAG, "Preparation was canceled, ignoring stream URL result");
+                    return;
+                }
+                
                 Log.d(TAG, "Got stream URL: " + url);
-                if (url != null && !url.isEmpty()) {
+                if (url != null && !url.isEmpty() && url.startsWith("http")) {
                     try {
-                        mediaPlayer.setDataSource(url);
-                        mediaPlayer.prepareAsync();
+                        if (mediaPlayer == null) {
+                            initMediaPlayer();
+                        }
+                        
+                        resetMediaPlayerSafely();
+                        
+                        try {
+                            mediaPlayer.setDataSource(url);
+                            mediaPlayer.prepareAsync();
 
-                        // Save current song ID
-                        preferenceManager.saveLastPlayedSongId(song.getId());
-                        Log.d(TAG, "Started preparing media player");
+                            preferenceManager.saveLastPlayedSongId(song.getId());
+                            Log.d(TAG, "Started preparing media player");
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error setting data source: " + e.getMessage(), e);
+                            handlePlaybackError("Error preparing media player: " + e.getMessage());
+                        }
                     } catch (Exception e) {
-                        Log.e(TAG, "Error setting data source", e);
-                        handlePlaybackError("Error preparing media player");
+                        Log.e(TAG, "Error setting data source: " + e.getMessage(), e);
+                        handlePlaybackError("Error preparing media player: " + e.getMessage());
                     }
                 } else {
-                    Log.e(TAG, "No streaming URL available for song: " + song.getTitle());
-                    handlePlaybackError("Could not get streaming URL");
+                    Log.e(TAG, "Invalid or empty streaming URL for song: " + song.getTitle() + ", URL: " + url);
+                    handlePlaybackError("Could not get valid streaming URL");
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Error in playFromPosition", e);
-            handlePlaybackError("Error playing song");
+            Log.e(TAG, "Error in playFromPosition: " + e.getMessage(), e);
+            handlePlaybackError("Error playing song: " + e.getMessage());
         }
     }
 
@@ -357,57 +378,92 @@ public class MusicPlaybackService extends Service implements
         Music song = playlist.get(position);
         currentMusic.setValue(song);
 
-        // Reset player and prepare new song
         try {
-            mediaPlayer.reset();
+            resetMediaPlayerSafely();
             isPreparing = true;
             playbackState.setValue(PlaybackState.PREPARING);
 
             Log.d(TAG, "Getting stream URL for song: " + song.getTitle());
 
-            // Get streaming URL and prepare
             zingMp3Api.getSongStreamUrl(song.getId()).observeForever(url -> {
+                if (!isPreparing) {
+                    Log.d(TAG, "Preparation was canceled, ignoring stream URL result");
+                    return;
+                }
+                
                 Log.d(TAG, "Got stream URL: " + url);
-                if (url != null && !url.isEmpty()) {
+                if (url != null && !url.isEmpty() && url.startsWith("http")) {
                     try {
-                        mediaPlayer.setDataSource(url);
-                        mediaPlayer.prepareAsync();
+                        if (mediaPlayer == null) {
+                            initMediaPlayer();
+                        }
+                        
+                        resetMediaPlayerSafely();
+                        
+                        try {
+                            mediaPlayer.setDataSource(url);
+                            mediaPlayer.prepareAsync();
 
-                        // Save current song ID
-                        preferenceManager.saveLastPlayedSongId(song.getId());
-                        Log.d(TAG, "Started preparing media player");
+                            preferenceManager.saveLastPlayedSongId(song.getId());
+                            Log.d(TAG, "Started preparing media player");
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error setting data source: " + e.getMessage(), e);
+                            handlePlaybackError("Error preparing media player: " + e.getMessage());
+                        }
                     } catch (Exception e) {
-                        Log.e(TAG, "Error setting data source", e);
-                        handlePlaybackError("Error preparing media player");
+                        Log.e(TAG, "Error setting data source: " + e.getMessage(), e);
+                        handlePlaybackError("Error preparing media player: " + e.getMessage());
                     }
                 } else {
-                    Log.e(TAG, "No streaming URL available for song: " + song.getTitle());
-                    handlePlaybackError("Could not get streaming URL");
+                    Log.e(TAG, "Invalid or empty streaming URL for song: " + song.getTitle() + ", URL: " + url);
+                    handlePlaybackError("Could not get valid streaming URL");
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Error in preparePosition", e);
-            handlePlaybackError("Error preparing song");
+            Log.e(TAG, "Error in preparePosition: " + e.getMessage(), e);
+            handlePlaybackError("Error preparing song: " + e.getMessage());
         }
     }
 
     private void handlePlaybackError(String message) {
+        Log.e(TAG, "Playback error: " + message);
         playbackState.setValue(PlaybackState.ERROR);
         isPreparing = false;
+        
+        resetMediaPlayerSafely();
+        
+        stopForeground(true);
+    }
+    
+    private void resetMediaPlayerSafely() {
         if (mediaPlayer != null) {
-            mediaPlayer.reset();
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+            } catch (Exception e) {
+                Log.e(TAG, "Error resetting media player", e);
+                initMediaPlayer();
+            }
+        } else {
+            initMediaPlayer();
         }
-        // You can add error callback to ViewModel here if needed
     }
 
     public void play() {
         if (playbackState.getValue() == PlaybackState.PAUSED && !isPreparing) {
             if (requestAudioFocus()) {
-                mediaPlayer.start();
-                playbackState.setValue(PlaybackState.PLAYING);
-                handler.post(progressUpdater);
-                updatePlaybackState();
-                updateNotification();
+                try {
+                    mediaPlayer.start();
+                    playbackState.setValue(PlaybackState.PLAYING);
+                    handler.post(progressUpdater);
+                    updatePlaybackState();
+                    updateNotification();
+                } catch (IllegalStateException e) {
+                    Log.e(TAG, "Error starting playback", e);
+                    handlePlaybackError("Cannot play in current state");
+                }
             }
         } else if (currentPosition < 0 && !playlist.isEmpty()) {
             playFromPosition(0);
@@ -415,68 +471,84 @@ public class MusicPlaybackService extends Service implements
     }
 
     public void pause() {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            playbackState.setValue(PlaybackState.PAUSED);
-            handler.removeCallbacks(progressUpdater);
-            updatePlaybackState();
-            updateNotification();
+        try {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                playbackState.setValue(PlaybackState.PAUSED);
+                handler.removeCallbacks(progressUpdater);
+                updatePlaybackState();
+                updateNotification();
+            }
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Error pausing playback", e);
         }
     }
 
     public void playPause() {
-        if (mediaPlayer.isPlaying()) {
-            pause();
-        } else {
-            play();
+        try {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                pause();
+            } else {
+                play();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in playPause", e);
+            handlePlaybackError("Error toggling playback");
         }
     }
 
     public void stop() {
-        mediaPlayer.stop();
-        mediaPlayer.reset();
-        playbackState.setValue(PlaybackState.IDLE);
-        handler.removeCallbacks(progressUpdater);
-        abandonAudioFocus();
-        stopForeground(true);
+        try {
+            if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.reset();
+            }
+            playbackState.setValue(PlaybackState.IDLE);
+            handler.removeCallbacks(progressUpdater);
+            abandonAudioFocus();
+            stopForeground(true);
+        } catch (Exception e) {
+            Log.e(TAG, "Error stopping playback", e);
+        }
     }
 
     public void playNext() {
         Log.d(TAG, "Playing next track");
         if (currentPosition < playlist.size() - 1) {
             playFromPosition(currentPosition + 1);
-        } else if (currentPosition == playlist.size() - 1 && playlist.size() > 0) {
-            // If at last song, loop to first song
+        } else if (currentPosition == playlist.size() - 1 && !playlist.isEmpty()) {
             playFromPosition(0);
         }
     }
 
     public void playPrevious() {
         Log.d(TAG, "Playing previous track");
-        // If we're more than 3 seconds into the song, restart it
         if (mediaPlayer.getCurrentPosition() > 3000) {
             mediaPlayer.seekTo(0);
         } else if (currentPosition > 0) {
             playFromPosition(currentPosition - 1);
-        } else if (currentPosition == 0 && playlist.size() > 0) {
-            // If at first song, loop to last song
+        } else if (currentPosition == 0 && !playlist.isEmpty()) {
             playFromPosition(playlist.size() - 1);
         }
     }
 
     public void seekTo(int position) {
         if (mediaPlayer != null) {
-            mediaPlayer.seekTo(position);
+            try {
+                mediaPlayer.seekTo(position);
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Cannot seek in current state", e);
+            }
         }
     }
 
     private void savePlaybackState() {
-        // Save current position for later resumption
         if (currentPosition >= 0 && currentPosition < playlist.size()) {
             Music currentSong = playlist.get(currentPosition);
             preferenceManager.saveLastPlayedSongId(currentSong.getId());
 
-            // Save playlist
             List<String> songIds = new ArrayList<>();
             for (Music music : playlist) {
                 songIds.add(music.getId());
@@ -510,7 +582,6 @@ public class MusicPlaybackService extends Service implements
                             mediaPlayer != null ? mediaPlayer.getDuration() : 0);
 
             if (song.getThumbnailM() != null) {
-                // Load artwork asynchronously
                 loadArtwork(song.getThumbnailM(), metadataBuilder);
             } else {
                 mediaSession.setMetadata(metadataBuilder.build());
@@ -525,7 +596,7 @@ public class MusicPlaybackService extends Service implements
                     .load(imageUrl)
                     .into(new SimpleTarget<Bitmap>() {
                         @Override
-                        public void onResourceReady(Bitmap resource,
+                        public void onResourceReady(@NonNull Bitmap resource,
                                                     Transition<? super Bitmap> transition) {
                             builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, resource);
                             mediaSession.setMetadata(builder.build());
@@ -546,15 +617,12 @@ public class MusicPlaybackService extends Service implements
         Music song = playlist.get(currentPosition);
         boolean isPlaying = mediaPlayer.isPlaying();
 
-        // Create content intent that opens the music player fragment
         Intent contentIntent = new Intent(this, MainActivity.class);
         contentIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Add action to indicate we want to show the music player
         contentIntent.putExtra("OPEN_MUSIC_PLAYER", true);
         PendingIntent contentPendingIntent = PendingIntent.getActivity(this, 0, contentIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Create action intents using constants from MediaButtonReceiver
         Intent prevIntent = new Intent(this, MediaButtonReceiver.class);
         prevIntent.setAction(MediaButtonReceiver.ACTION_PREVIOUS);
         Intent playPauseIntent = new Intent(this, MediaButtonReceiver.class);
@@ -569,7 +637,6 @@ public class MusicPlaybackService extends Service implements
         PendingIntent nextPendingIntent = PendingIntent.getBroadcast(this, 3, nextIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        // Create notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(song.getTitle())
                 .setContentText(song.getArtists())
@@ -589,7 +656,6 @@ public class MusicPlaybackService extends Service implements
                         .setMediaSession(mediaSession.getSessionToken())
                         .setShowActionsInCompactView(0, 1, 2));
 
-        // Load album art asynchronously
         if (song.getThumbnailM() != null && !song.getThumbnailM().isEmpty()) {
             try {
                 Glide.with(getApplicationContext())
@@ -597,12 +663,10 @@ public class MusicPlaybackService extends Service implements
                         .load(song.getThumbnailM())
                         .into(new SimpleTarget<Bitmap>() {
                             @Override
-                            public void onResourceReady(Bitmap resource,
+                            public void onResourceReady(@NonNull Bitmap resource,
                                                         Transition<? super Bitmap> transition) {
-                                if (resource != null) {
-                                    builder.setLargeIcon(resource);
-                                    updateForegroundNotification(builder.build());
-                                }
+                                builder.setLargeIcon(resource);
+                                updateForegroundNotification(builder.build());
                             }
                         });
             } catch (Exception e) {
@@ -622,7 +686,6 @@ public class MusicPlaybackService extends Service implements
             if (isPlaying) {
                 startForeground(NOTIFICATION_ID, notification);
             } else if (notificationManager != null) {
-                // For API 29+ devices, we need to use stopForeground(STOP_FOREGROUND_DETACH) to keep notification visible
                 stopForeground(Service.STOP_FOREGROUND_DETACH);
                 notificationManager.notify(NOTIFICATION_ID, notification);
             }
@@ -640,21 +703,27 @@ public class MusicPlaybackService extends Service implements
         abandonAudioFocus();
 
         if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
+            try {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer.release();
+            } catch (Exception e) {
+                Log.e(TAG, "Error releasing MediaPlayer", e);
+            } finally {
+                mediaPlayer = null;
+            }
         }
 
         super.onDestroy();
     }
 
-    // Binder class for clients to access the service
     public class MusicBinder extends Binder {
         public MusicPlaybackService getService() {
             return MusicPlaybackService.this;
         }
     }
 
-    // Media session callback
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
@@ -687,7 +756,6 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
-    // Getters for LiveData objects
     public LiveData<Integer> getPlaybackProgress() {
         return playbackProgress;
     }
@@ -701,7 +769,24 @@ public class MusicPlaybackService extends Service implements
     }
 
     public int getDuration() {
-        return mediaPlayer != null ? mediaPlayer.getDuration() : 0;
+        if (mediaPlayer != null) {
+            try {
+                if (playbackState.getValue() == PlaybackState.PLAYING || 
+                    playbackState.getValue() == PlaybackState.PAUSED) {
+                    return mediaPlayer.getDuration();
+                } else {
+                    return duration.getValue() != null ? duration.getValue() : 0;
+                }
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "Error getting duration", e);
+                return duration.getValue() != null ? duration.getValue() : 0;
+            }
+        }
+        return duration.getValue() != null ? duration.getValue() : 0;
+    }
+
+    public LiveData<Integer> getDurationLiveData() {
+        return duration;
     }
 
     public List<Music> getPlaylist() {
