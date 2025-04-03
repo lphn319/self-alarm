@@ -9,14 +9,18 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+            android:background="?attr/colorSurface"
+            app:titleTextColor="?attr/colorOnSurface"
+            android:elevation="0dp"
+            android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -41,6 +45,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:background="?attr/colorSurface"
+            app:itemIconTint="?attr/colorPrimary"
+            app:itemTextColor="?attr/colorOnSurface"
+            app:itemRippleColor="?attr/colorSecondary"
+            android:elevation="8dp"
             app:menu="@menu/bottom_navigation_menu"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

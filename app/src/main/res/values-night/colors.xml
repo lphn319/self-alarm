@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme anime-inspired color palette -->
+    <color name="dark_anime_primary_blue">#1F85B4</color>
+    <color name="dark_anime_primary_dark_blue">#165C7D</color>
+    <color name="dark_anime_accent_pink">#E83AAD</color>
+    <color name="dark_anime_accent_light_pink">#BD5698</color>
+    
+    <!-- Dark theme background colors -->
+    <color name="dark_background">#121212</color>
+    <color name="dark_surface">#1E1E1E</color>
+    <color name="dark_card_background">#272727</color>
+    <color name="dark_dialog_background">#2D2D2D</color>
+    <color name="dark_status_bar">#0D0D0D</color>
+    <color name="dark_nav_bar">#0D0D0D</color>
+    <color name="dark_surface_highlight">#E0E0E0</color>
+    
+    <!-- Dark theme text colors -->
+    <color name="dark_anime_text_light">#E0E0E0</color>
+    <color name="dark_anime_text_secondary">#9E9E9E</color>
+    <color name="dark_anime_text_disabled">#757575</color>
+    
+    <!-- Dark theme success/error colors -->
+    <color name="dark_anime_success_green">#1DB954</color>
+    <color name="dark_anime_error_red">#CF6679</color>
+    <color name="dark_anime_warning_yellow">#FFB74D</color>
+    
+    <!-- Battery status colors for dark theme -->
+    <color name="dark_battery_normal">#2ECC71</color>
+    <color name="dark_battery_low">#F39C12</color>
+    <color name="dark_battery_critical">#CF6679</color>
+    
+    <!-- Dark theme accent and highlight colors -->
+    <color name="dark_anime_highlight_blue">#29B6F6</color>
+    <color name="dark_anime_highlight_purple">#B388FF</color>
+    <color name="dark_anime_highlight_orange">#FFAB40</color>
+    
+    <!-- System colors required by Material Design -->
+    <color name="colorPrimary">@color/dark_anime_primary_blue</color>
+    <color name="colorPrimaryDark">@color/dark_anime_primary_dark_blue</color>
+    <color name="colorAccent">@color/dark_anime_accent_pink</color>
+    <color name="colorBackground">@color/dark_background</color>
+    <color name="colorTextPrimary">@color/dark_anime_text_light</color>
+    <color name="colorTextSecondary">@color/dark_anime_text_secondary</color>
+    <color name="colorDivider">#3C3C3C</color>
+</resources>

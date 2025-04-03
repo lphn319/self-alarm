@@ -220,7 +220,7 @@ public class MusicPlayerViewModel extends AndroidViewModel {
         if (index >= 0) {
             // Song exists in playlist, prepare that position
             Log.d(TAG, "Preparing existing song from position: " + index);
-            musicService.preparePosition(index == 0 ? 0 : index - 1);
+            musicService.preparePosition(index);
         } else {
             // Create a new playlist with just this song
             Log.d(TAG, "Creating new playlist with single song");
