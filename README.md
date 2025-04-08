@@ -1,8 +1,8 @@
 ﻿# SelfAlarm - 2rd Group Project
 
 ## Nhóm thực hiện
-- Phan Thị Mỹ Linh - 22110172
 - Nguyễn Hữu Lộc - 22110179
+- Phan Thị Mỹ Linh - 22110172
 - Trần Nguyễn Quốc Bảo - 22110112
 
 ## Tính năng chính
